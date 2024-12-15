@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "alpinejs": "^3.14.7",
     "mongodb": "^6.12.0",
     "mongoose": "^8.8.4",
     "next": "15.0.4",

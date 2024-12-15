@@ -19,6 +19,7 @@ const Notes: React.FC = () => {
     const handleClickOutside = (event: MouseEvent) => {
         if (noteRef.current && !noteRef.current.contains(event.target as Node)) {
             setIsTitleVisible(false);
+            setTextValue('');
         }
     };
 
@@ -33,7 +34,7 @@ const Notes: React.FC = () => {
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-            const maxHeight = 27 * 20;
+            const maxHeight = 25 * 20;
             if (textareaRef.current.scrollHeight > maxHeight) {
                 textareaRef.current.style.overflowY = 'auto';
                 textareaRef.current.style.height = `${maxHeight}px`;
@@ -62,12 +63,11 @@ const Notes: React.FC = () => {
                     value={textValue}
                     onChange={handleChange}
                     onClick={handleNoteClick}
-                    className="w-full p-1 bg-transparent border-none outline-none resize-none text-sm text-[#E8EAED]"
+                    className="w-full p-1 bg-transparent border-none outline-none resize-none text-sm text-[#E8EAED] mb-2"
                     rows={2}
                 ></textarea>
             </form>
         </div>
-
     );
 };
 
