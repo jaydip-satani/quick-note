@@ -31,7 +31,7 @@ const Note: React.FC = () => {
         <div className="relative bg-[#202124] min-h-screen text-[#E8EAED] p-4">
             <div
                 className="absolute top-[40%] left-[50%] transform -translate-x-[50%] 
-                w-[90%] max-w-[1000px] bg-[#202124] shadow-md rounded-xl border border-[#969696] p-4 overflow-y-auto"
+                w-[90%] max-w-[1000px] bg-[#202124] shadow-md rounded-xl  p-4 overflow-y-auto"
             >
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
                     {notes.map((note) => (
@@ -52,7 +52,7 @@ const Note: React.FC = () => {
             </div>
             {selectedNote && (
                 <div
-                    className="fixed inset-0 flex items-center backdrop-blur-sm justify-center bg-black bg-opacity-70 z-50"
+                    className="fixed inset-0 flex items-center backdrop-blur-sm justify-center bg-[#202124] bg-opacity-70 z-50"
                     onClick={closeNote}
                 >
                     <div

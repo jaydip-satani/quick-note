@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import logo from "../../assets/logo.svg"
+import Link from 'next/link'
 const Navbar: React.FC = () => {
     const [userDropDownIsOpen, setUserDropDownIsOpen] = useState(false);
     const [openWithKeyboard, setOpenWithKeyboard] = useState(false);
@@ -48,13 +49,13 @@ const Navbar: React.FC = () => {
                 <div className="px-4">
                     <div className="flex items-center justify-between">
                         <div className="flex shrink-0">
-                            <a aria-current="page" className="flex items-center" href="/">
+                            <Link aria-current="page" className="flex items-center" href="/">
                                 <Image
                                     className="h-7 w-auto light:invert"
                                     src={logo}
                                     alt="Next.js logo"
                                 />
-                            </a>
+                            </Link>
                         </div>
                         <div className="relative">
                             <div
