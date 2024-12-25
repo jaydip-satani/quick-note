@@ -1,11 +1,13 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
-import Lottie from 'react-lottie';
+import { Player } from '@lottiefiles/react-lottie-player';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { useRouter } from 'next/navigation';
 import failure from '@/public/animations/failure.json';
 import success from '@/public/animations/success.json';
 import fingerprint from '@/public/animations/fingerprint.json';
-import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { useRouter } from 'next/navigation';
+
 
 const Page: React.FC = () => {
     enum AnimationState {
@@ -13,11 +15,13 @@ const Page: React.FC = () => {
         Success = "success",
         Fingerprint = "fingerprint"
     }
+
     const animations = {
         [AnimationState.Failure]: failure,
         [AnimationState.Success]: success,
         [AnimationState.Fingerprint]: fingerprint,
     };
+
     const [passcode, setPasscode] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [currentState, setCurrentState] = useState<AnimationState>(AnimationState.Fingerprint);
@@ -37,10 +41,10 @@ const Page: React.FC = () => {
         if (passcode === "1234") {
             setCurrentState(AnimationState.Success);
             setAnimationComplete(false);
-            setIsLoop(false)
+            setIsLoop(false);
         } else {
             setCurrentState(AnimationState.Failure);
-            setIsLoop(false)
+            setIsLoop(false);
         }
     };
 
@@ -48,25 +52,18 @@ const Page: React.FC = () => {
         setShowPassword((prev) => !prev);
     };
 
-    const options = {
-        loop: isLoop,
-        autoplay: true,
-        animationData: currentAnimation,
-        rendererSettings: {
-            preserveAspectRatio: 'xMidYMid slice',
-        },
-    };
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPasscode(e.target.value);
     };
+
+    const accessString = "dkjdibibiwrb";
 
     const handleAnimationComplete = () => {
         if (currentState === AnimationState.Success) {
             setAnimationComplete(true);
             setTimeout(() => {
                 if (isClient) {
-                    router.push('/');
+                    router.push(`/secure-notes/access?token=${accessString}`);
                 }
             }, 600);
         }
@@ -79,7 +76,17 @@ const Page: React.FC = () => {
             <div className="bg-[#202124] rounded-lg p-8 w-96 shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)]">
                 <div className="flex justify-center mb-4">
                     <div className="w-30 h-30">
-                        <Lottie options={options} eventListeners={[{ eventName: 'complete', callback: handleAnimationComplete }]} />
+                        <Player
+                            autoplay
+                            loop={isLoop}
+                            src={currentAnimation}
+                            onEvent={(event) => {
+                                if (event === 'complete') {
+                                    handleAnimationComplete();
+                                }
+                            }}
+                            style={{ height: '100%', width: '100%' }}
+                        />
                     </div>
                 </div>
                 <form onSubmit={handleSubmit}>

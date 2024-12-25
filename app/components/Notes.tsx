@@ -1,25 +1,69 @@
-'use client'
+'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import '../globals.css'
+import '../globals.css';
+import jwt from 'jsonwebtoken';
 
 const Notes: React.FC = () => {
     const [isTitleVisible, setIsTitleVisible] = useState(false);
+    const [title, setTitle] = useState('');
     const [textValue, setTextValue] = useState('');
     const noteRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const titleRef = useRef<string>('');
+    const textValueRef = useRef<string>('');
+
+    const getAuthToken = (): string | null => {
+        const match = document.cookie.match(new RegExp('(^| )authToken=([^;]+)'));
+        return match ? match[2] : null;
+    };
 
     const handleNoteClick = () => {
         setIsTitleVisible(true);
     };
 
-    const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setTextValue(event.target.value);
-    };
-
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = async (event: MouseEvent) => {
         if (noteRef.current && !noteRef.current.contains(event.target as Node)) {
             setIsTitleVisible(false);
-            setTextValue('');
+            const latestTitle = titleRef.current.trim();
+            const latestTextValue = textValueRef.current.trim();
+
+            if (latestTextValue && latestTitle) {
+                try {
+                    const token = getAuthToken();
+                    if (!token) {
+                        console.error('No auth token found');
+                        return;
+                    }
+
+                    const decodedToken = jwt.decode(token) as { user?: { id?: string } };
+                    const userId = decodedToken?.user?.id;
+
+                    if (!userId) {
+                        console.error('Invalid or missing user ID in token');
+                        return;
+                    }
+                    const response = await fetch('/api/addNotes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ userId, noteTitle: latestTitle, noteData: latestTextValue }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to save note');
+                    }
+
+                    const data = await response.json();
+                    if (data) {
+                        setTitle('');
+                        setTextValue('');
+                    }
+                } catch (err) {
+                    console.error('Error saving note:', err);
+                }
+            }
         }
     };
 
@@ -29,6 +73,14 @@ const Notes: React.FC = () => {
             document.removeEventListener('click', handleClickOutside);
         };
     }, []);
+
+    useEffect(() => {
+        titleRef.current = title;
+    }, [title]);
+
+    useEffect(() => {
+        textValueRef.current = textValue;
+    }, [textValue]);
 
     useEffect(() => {
         if (textareaRef.current) {
@@ -53,6 +105,8 @@ const Notes: React.FC = () => {
                 {isTitleVisible && (
                     <input
                         type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value.trimStart())}
                         placeholder="Title"
                         className="w-full p-1 bg-transparent border-none outline-none text-lg font-semibold text-[#E8EAED] mb-2"
                     />
@@ -61,7 +115,7 @@ const Notes: React.FC = () => {
                     ref={textareaRef}
                     placeholder="Take a note..."
                     value={textValue}
-                    onChange={handleChange}
+                    onChange={(e) => setTextValue(e.target.value.trimStart())}
                     onClick={handleNoteClick}
                     className="w-full p-1 bg-transparent border-none outline-none resize-none text-sm text-[#E8EAED] mb-2"
                     rows={2}

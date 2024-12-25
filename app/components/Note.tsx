@@ -1,21 +1,74 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import jwt from 'jsonwebtoken';
 
 interface NoteData {
-    id: number;
+    _id: string;
     title: string;
     content: string;
 }
 
+const getAuthToken = (): string | null => {
+    const match = document.cookie.match(new RegExp('(^| )authToken=([^;]+)'));
+    return match ? match[2] : null;
+};
+
 const Note: React.FC = () => {
+    const [notes, setNotes] = useState<NoteData[]>([]);
     const [selectedNote, setSelectedNote] = useState<NoteData | null>(null);
-    const [notes, setNotes] = useState<NoteData[]>(
-        [...Array(50)].map((_, index) => ({
-            id: index + 1,
-            title: `Note Title ${index + 1}`,
-            content: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quidem voluptatem consequatur sed laborum vitae porro expedita molestiae, reiciendis, ratione totam saepe necessitatibus aspernatur voluptatibus. Non, aspernatur delectus sint aliquam iure eos illo commodi, impedit nam obcaecati quasi assumenda ab quibusdam, voluptatibus voluptatum! Corrupti, pariatur! Deserunt sequi voluptas iure? Obcaecati voluptatum nam molestiae non est. Veniam ullam, eos, quis cum rem quidem neque molestias eligendi magnam repudiandae nostrum! Quasi, recusandae vero! Eaque libero, sint optio quos corrupti incidunt blanditiis. Laudantium blanditiis odio accusantium iste deleniti id aliquid dignissimos quisquam, non dolor? Ad quo ut error voluptates laudantium at officiis fuga deserunt.",
-        }))
-    );
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchNotes = async () => {
+            setLoading(true);
+            setError(null);
+
+            const token = getAuthToken();
+            if (!token) {
+                setError('No auth token found');
+                setLoading(false);
+                return;
+            }
+
+            const decodedToken = jwt.decode(token) as { user?: { id?: string } };
+            const userId = decodedToken?.user?.id;
+
+            if (!userId) {
+                setError('Invalid or missing user ID in token');
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/getNotes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch notes');
+                }
+
+                const responseData = await response.json();
+                const notesArray = responseData.notes || [];
+                const formattedNotes = notesArray.map((note: any) => ({
+                    _id: note._id,
+                    title: note.noteTitle,
+                    content: note.noteData,
+                }));
+
+                setNotes(formattedNotes);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'An unknown error occurred');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchNotes();
+    }, []);
 
     const openNote = (note: NoteData) => setSelectedNote(note);
 
@@ -27,16 +80,22 @@ const Note: React.FC = () => {
         }
     };
 
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
     return (
         <div className="relative bg-[#202124] min-h-screen text-[#E8EAED] p-4">
-            <div
-                className="absolute top-[40%] left-[50%] transform -translate-x-[50%] 
-                w-[90%] max-w-[1000px] bg-[#202124] shadow-md rounded-xl  p-4 overflow-y-auto"
-            >
+            <div className="absolute top-[40%] left-[50%] transform -translate-x-[50%] 
+                w-[90%] max-w-[1000px] bg-[#202124] shadow-md rounded-xl  p-4 overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
                     {notes.map((note) => (
                         <div
-                            key={note.id}
+                            key={note._id}
                             onClick={() => openNote(note)}
                             className="p-4 bg-[#202124] h-40 shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)] rounded-xl overflow-auto border border-[#696969] text-[#E8EAED] cursor-pointer"
                         >
@@ -44,8 +103,6 @@ const Note: React.FC = () => {
                             <p className="w-full overflow-hidden text-ellipsis">
                                 {note.content.length > 70 ? `${note.content.slice(0, 70)}...` : note.content}
                             </p>
-
-
                         </div>
                     ))}
                 </div>
@@ -75,9 +132,8 @@ const Note: React.FC = () => {
                         />
                     </div>
                 </div>
-            )
-            }
-        </div >
+            )}
+        </div>
     );
 };
 
