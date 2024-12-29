@@ -1,7 +1,7 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import '../globals.css';
-import jwt from 'jsonwebtoken';
+import { NoteContext } from '../context/notes/noteState';
 
 const Notes: React.FC = () => {
     const [isTitleVisible, setIsTitleVisible] = useState(false);
@@ -10,77 +10,50 @@ const Notes: React.FC = () => {
     const noteRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const titleRef = useRef<string>('');
-    const textValueRef = useRef<string>('');
+    const context = useContext(NoteContext);
+    if (!context) {
+        throw new Error('NoteContext is not provided. Ensure Notes is wrapped in NoteProvider.');
+    }
+    const { addNotes } = context;
 
     const getAuthToken = (): string | null => {
         const match = document.cookie.match(new RegExp('(^| )authToken=([^;]+)'));
         return match ? match[2] : null;
     };
 
-    const handleNoteClick = () => {
-        setIsTitleVisible(true);
-    };
+    const handleNoteClick = () => setIsTitleVisible(true);
 
-    const handleClickOutside = async (event: MouseEvent) => {
+    const handleClickOutside = useCallback(async (event: MouseEvent) => {
         if (noteRef.current && !noteRef.current.contains(event.target as Node)) {
             setIsTitleVisible(false);
-            const latestTitle = titleRef.current.trim();
-            const latestTextValue = textValueRef.current.trim();
+            const latestTitle = title.trim();
+            const latestTextValue = textValue.trim();
 
             if (latestTextValue && latestTitle) {
-                try {
-                    const token = getAuthToken();
-                    if (!token) {
-                        console.error('No auth token found');
-                        return;
-                    }
-
-                    const decodedToken = jwt.decode(token) as { user?: { id?: string } };
-                    const userId = decodedToken?.user?.id;
-
-                    if (!userId) {
-                        console.error('Invalid or missing user ID in token');
-                        return;
-                    }
-                    const response = await fetch('/api/addNotes', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ userId, noteTitle: latestTitle, noteData: latestTextValue }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to save note');
-                    }
-
-                    const data = await response.json();
-                    if (data) {
-                        setTitle('');
-                        setTextValue('');
-                    }
-                } catch (err) {
-                    console.error('Error saving note:', err);
+                const token = getAuthToken();
+                if (!token) {
+                    console.error('No auth token found');
+                    return;
                 }
+                const newNote = {
+                    _id: "",
+                    noteTitle: latestTitle,
+                    noteData: latestTextValue
+                };
+                addNotes(newNote);
+                setTitle('');
+                setTextValue('');
             }
         }
-    };
+    }, [title, textValue]);
 
     useEffect(() => {
         document.addEventListener('click', handleClickOutside);
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, []);
+    }, [handleClickOutside]);
 
-    useEffect(() => {
-        titleRef.current = title;
-    }, [title]);
-
-    useEffect(() => {
-        textValueRef.current = textValue;
-    }, [textValue]);
 
     useEffect(() => {
         if (textareaRef.current) {
@@ -97,11 +70,8 @@ const Notes: React.FC = () => {
     }, [textValue]);
 
     return (
-        <div
-            ref={noteRef}
-            className="absolute top-[20%] left-1/2 w-1/3 -translate-x-1/2 p-1 bg-[#202124] shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)] rounded-xl text-gray-300 border border-[#969696] flex flex-col"
-        >
-            <form action="" className="flex flex-col">
+        <div ref={noteRef} className="absolute top-[20%] left-1/2 w-1/3 -translate-x-1/2 p-1 bg-[#202124] shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)] rounded-xl text-gray-300 border border-[#969696] flex flex-col">
+            <form className="flex flex-col">
                 {isTitleVisible && (
                     <input
                         type="text"

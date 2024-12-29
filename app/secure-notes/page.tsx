@@ -61,11 +61,11 @@ const Page: React.FC = () => {
     const handleAnimationComplete = () => {
         if (currentState === AnimationState.Success) {
             setAnimationComplete(true);
-            setTimeout(() => {
-                if (isClient) {
-                    router.push(`/secure-notes/access?token=${accessString}`);
-                }
-            }, 600);
+            // setTimeout(() => {
+            //     if (isClient) {
+            //         router.push(`/secure-notes/access?token=${accessString}`);
+            //     }
+            // }, 600);
         }
     };
 
