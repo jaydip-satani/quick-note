@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@lottiefiles/react-lottie-player": "^3.5.4",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "alpinejs": "^3.14.7",
     "bcryptjs": "^2.4.3",
     "crypto-js": "^4.2.0",

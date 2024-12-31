@@ -4,9 +4,9 @@ import Notes from '@/models/Notes';
 import mongoose from 'mongoose';
 import { fetchUser } from '../../fetchUser';
 export async function PUT(request: Request, { params }: { params: { _id: string } }) {
-    const { _id } = params;
+    const { _id } = await params;
     try {
-        const { noteTitle, noteData } = await request.json();
+        const { noteTitle, noteData, pinned } = await request.json();
 
         if (!mongoose.Types.ObjectId.isValid(_id)) {
             return NextResponse.json({ message: 'Invalid User ID' }, { status: 400 });
@@ -23,9 +23,10 @@ export async function PUT(request: Request, { params }: { params: { _id: string 
         if (userExists.userId != user.id) {
             return NextResponse.json({ error: 'Not Allowed' }, { status: 401 });
         }
-        const newNote: { noteTitle?: string; noteData?: string; } = {};
+        const newNote: { noteTitle?: string; noteData?: string; pinned?: boolean } = {};
         if (noteTitle) newNote.noteTitle = noteTitle;
         if (noteData) newNote.noteData = noteData;
+        if (typeof pinned === 'boolean') newNote.pinned = pinned;
         const updatedNote = await Notes.findOneAndUpdate(
             { _id: _id },
             { $set: newNote },

@@ -4,6 +4,7 @@ export interface INotes extends Document {
     userId: mongoose.Types.ObjectId;
     noteTitle: string;
     noteData: string;
+    pinned: boolean;
 }
 
 const NoteSchema: Schema = new Schema(
@@ -20,6 +21,11 @@ const NoteSchema: Schema = new Schema(
         noteData: {
             type: String,
             required: true
+        },
+        pinned: {
+            type: Boolean,
+            required: true,
+            default: false
         },
     },
     {

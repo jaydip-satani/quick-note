@@ -38,7 +38,8 @@ const Notes: React.FC = () => {
                 const newNote = {
                     _id: "",
                     noteTitle: latestTitle,
-                    noteData: latestTextValue
+                    noteData: latestTextValue,
+                    pinned: false
                 };
                 addNotes(newNote);
                 setTitle('');

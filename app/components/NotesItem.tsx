@@ -1,11 +1,14 @@
-'use client'
+'use client';
 import { useContext, useState } from "react";
 import { NoteContext } from "../context/notes/noteState";
-
+import Image from "next/image";
+import pin from '@/assets/pin.svg';
+import pinned from '@/assets/pinned.svg';
 export interface Note {
     _id: string;
     noteTitle: string;
     noteData: string;
+    pinned: boolean;
 }
 
 interface NotesItemProps {
@@ -21,22 +24,28 @@ const NotesItem: React.FC<NotesItemProps> = ({ note }) => {
     const { updateNotes } = context;
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
-    // Open the note editor
     const openNote = (note: Note) => setSelectedNote(note);
 
-    // Close the note editor, update the note and send it to the API
     const closeNote = async () => {
         if (selectedNote) {
-            // Call the API to update the note when it's closed
             await updateNotes(selectedNote);
         }
-        setSelectedNote(null);  // Close the note editor
+        setSelectedNote(null);
     };
 
-    // Handle changes in the note (Title or Data)
     const handleChange = (key: 'noteTitle' | 'noteData', value: string) => {
         if (selectedNote) {
             setSelectedNote({ ...selectedNote, [key]: value });
+        }
+    };
+
+    const togglePin = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const updatedNote = { ...note, pinned: note.pinned ? false : true };
+        try {
+            await updateNotes(updatedNote);
+        } catch (error) {
+            console.error("Error updating pinned status:", error);
         }
     };
 
@@ -44,12 +53,23 @@ const NotesItem: React.FC<NotesItemProps> = ({ note }) => {
         <>
             <div
                 onClick={() => openNote(note)}
-                className="p-4 bg-[#202124] h-40 shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)] rounded-xl overflow-auto border border-[#696969] text-[#E8EAED] cursor-pointer"
+                className={`p-4 h-40 shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)] rounded-xl overflow-auto border text-[#E8EAED] cursor-pointer ${note.pinned ? '' : 'bg-[#202124] border-[#696969]'
+                    }`}
             >
-                <h3 className="w-full text-lg font-semibold mb-2">{note.noteTitle}</h3>
-                <p className="w-full overflow-hidden whitespace-nowrap text-ellipsis">
-                    {note.noteData.length > 70 ? `${note.noteData.slice(0, 70)}...` : note.noteData}
-                </p>
+                <div className="flex justify-between items-center cursor-text">
+                    <h3 className="text-lg font-semibold mb-2 ">{note.noteTitle}</h3>
+                    <div
+                        onClick={togglePin}
+                        className="text-sm rounded text-[#E8EAED] inline-block cursor-pointer"
+                    >
+                        {note.pinned ? <Image src={pinned} alt="" /> : <Image src={pin} alt="" />}
+                    </div>
+                </div>
+                <textarea
+                    readOnly
+                    value={note.noteData.length > 70 ? `${note.noteData.slice(0, 70)}...` : note.noteData}
+                    className="w-full overflow-hidden text-ellipsis resize-none bg-transparent border-none text-inherit focus:outline-none"
+                />
             </div>
 
             {selectedNote && (

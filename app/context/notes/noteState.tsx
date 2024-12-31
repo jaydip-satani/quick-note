@@ -5,6 +5,7 @@ interface NoteData {
     _id: string;
     noteTitle: string;
     noteData: string;
+    pinned: boolean;
 }
 
 interface NoteContextType {
@@ -119,12 +120,12 @@ const NoteState: React.FC<NoteStateProps> = ({ children }) => {
 
             const { updatedNote: updatedData } = await response.json();
 
-            // Update the local notes state with the updated note
             setNotes(prevNotes =>
                 prevNotes.map(note =>
                     note._id === updatedData._id ? updatedData : note
                 )
             );
+            console.log(notes)
         } catch (error) {
             console.error("Failed to update note:", error);
         }
