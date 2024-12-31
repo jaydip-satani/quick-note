@@ -4,6 +4,15 @@ import { useState } from 'react';
 
 const Sidebar: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    let timeOfDay
+    let currentTime = new Date().getHours();
+    if (currentTime < 12) {
+        timeOfDay = 'Good Morning ';
+    } else if (currentTime < 18) {
+        timeOfDay = 'Godd Afternoon ';
+    } else {
+        timeOfDay = 'Good Evening ';
+    }
     return (
         <div className="text-[#E8EAED] bg-gray-100  dark:bg-dark dark:text-light">
             <div
@@ -23,7 +32,8 @@ const Sidebar: React.FC = () => {
                 <div className="z-10 flex flex-col flex-1">
                     <div className="flex items-center justify-between flex-shrink-0 w-64 p-4">
                         <div className="relative overflow-hidden w-48">
-                            <div className="animate-marquee whitespace-nowrap">Good Morning Jaydip</div>
+                            <div className="animate-marquee whitespace-nowrap">
+                                {timeOfDay}Jaydip</div>
                         </div>
                         <button
                             onClick={() => setIsSidebarOpen(false)}
