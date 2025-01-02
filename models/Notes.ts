@@ -5,6 +5,9 @@ export interface INotes extends Document {
     noteTitle: string;
     noteData: string;
     pinned: boolean;
+    archive: boolean;
+    secureNote: boolean;
+    bin: boolean;
 }
 
 const NoteSchema: Schema = new Schema(
@@ -23,6 +26,21 @@ const NoteSchema: Schema = new Schema(
             required: true
         },
         pinned: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        archive: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        secureNote: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        bin: {
             type: Boolean,
             required: true,
             default: false

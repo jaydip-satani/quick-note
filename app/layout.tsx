@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "./components/Header";
 import { usePathname } from "next/navigation";
 import Sidebar from "./components/floatingActionButton";
+import NoteState from "./context/notes/noteState";
 
 
 const geistSans = localFont({
@@ -30,7 +31,9 @@ export default function RootLayout({
         className={` bg-[#202124] ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {!noNavbarPaths.includes(pathname) && <><Navbar /><Sidebar /></>}
-        {children}
+        <NoteState>
+          {children}
+        </NoteState>
       </body>
     </html>
   );

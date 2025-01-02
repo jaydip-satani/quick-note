@@ -6,6 +6,9 @@ interface NoteData {
     noteTitle: string;
     noteData: string;
     pinned: boolean;
+    archive: boolean;
+    secureNote: boolean;
+    bin: boolean;
 }
 
 interface NoteContextType {
