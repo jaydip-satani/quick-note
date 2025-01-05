@@ -23,7 +23,11 @@ export async function POST(req: Request) {
       console.error('Query failed or timed out:', error);
       return NextResponse.json({ message: 'User Not Registered: ' + error.message }, { status: 400 });
     }
-    let response = await User.updateOne({ $set: { otp: otp } })
+    let response = await User.updateOne(
+      { email: validEmail },
+      { $set: { otp: otp } }
+    );
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -95,6 +99,7 @@ export async function POST(req: Request) {
 
     if (response) {
       const authtoken = jwt.sign(email, JWT_TOKEN);
+
       await transporter.sendMail(mailOptions);
       return new Response(JSON.stringify({ success: true, authtoken: authtoken }), { status: 200 });
     } else {
