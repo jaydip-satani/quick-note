@@ -5,7 +5,9 @@ import Navbar from "./components/Header";
 import { usePathname } from "next/navigation";
 import Sidebar from "./components/floatingActionButton";
 import NoteState from "./context/notes/noteState";
-
+import Head from "next/head";
+import { useEffect } from "react";
+import { UserProvider } from "./context/user/userContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,16 +26,35 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname()
-  const noNavbarPaths = ["/auth/login", "/auth/signup", "/auth/forgot-password", "/auth/verification", "/secure-notes"];
+  const NavbarPaths = ["/", "/archive", "/bin", "/settings"];
+  const titles: Record<string, string> = {
+    "/auth/login": "Login ",
+    "/auth/signup": "Sign Up ",
+    "/auth/forgot-password": "Forgot Password ",
+    "/auth/verification": "Verification ",
+    "/secure-notes": "Secure Notes ",
+    "/archive": "Archive ",
+    "/bin": "Bin ",
+  };
+
+  const defaultTitle = "Notely";
+
+  useEffect(() => {
+    const pageTitle = titles[pathname] || defaultTitle;
+    document.title = pageTitle;
+  }, [pathname]);
+
   return (
     <html lang="en">
       <body
         className={` bg-[#202124] ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {!noNavbarPaths.includes(pathname) && <><Navbar /><Sidebar /></>}
-        <NoteState>
-          {children}
-        </NoteState>
+        <UserProvider>
+          {NavbarPaths.includes(pathname) && <><Navbar /><Sidebar /></>}
+          <NoteState>
+            {children}
+          </NoteState>
+        </UserProvider>
       </body>
     </html>
   );

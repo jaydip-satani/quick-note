@@ -3,11 +3,18 @@ import React, { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import logo from "../../assets/logo.svg"
 import Link from 'next/link'
+import { globalUser } from '@/app/context/user/userContext';
+import { useRouter } from 'next/navigation';
 const Navbar: React.FC = () => {
+    const router = useRouter();
     const [userDropDownIsOpen, setUserDropDownIsOpen] = useState(false);
     const [openWithKeyboard, setOpenWithKeyboard] = useState(false);
     const dropdownRef = useRef<HTMLUListElement>(null);
-
+    const handleLogOut = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        document.cookie = "authToken=; path=/; SameSite=Strict; Secure; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        router.push('/');
+    }
     const handleOutsideClick = (event: MouseEvent) => {
         if (
             dropdownRef.current &&
@@ -17,6 +24,10 @@ const Navbar: React.FC = () => {
             setOpenWithKeyboard(false);
         }
     };
+    const { name, email, profilePhoto, loading, fetchUserData } = globalUser();
+    useEffect(() => {
+        fetchUserData();
+    }, [])
 
     useEffect(() => {
         if (userDropDownIsOpen || openWithKeyboard) {
@@ -100,7 +111,7 @@ const Navbar: React.FC = () => {
                                     aria-controls="userMenu"
                                 >
                                     <img
-                                        src="https://www.jaydipsatani.com/static/media/avatar.5852f40fbb38aa284829fa3fb7722225.svg"
+                                        src={profilePhoto ?? undefined}
                                         alt="User Profile"
                                         className="object-cover rounded-full size-10"
                                     />
@@ -115,44 +126,34 @@ const Navbar: React.FC = () => {
                                         <li className="border-b border-neutral-300 dark:border-neutral-700">
                                             <div className="flex flex-col px-4 py-2">
                                                 <span className="text-sm font-medium text-neutral-900 dark:text-white">
-                                                    Alice Brown
+                                                    {name ? name?.charAt(0).toUpperCase() + name?.slice(1) : ''}
                                                 </span>
                                                 <p className="text-xs text-neutral-600 dark:text-neutral-300">
-                                                    alice.brown@gmail.com
+                                                    {loading ? (
+                                                        <span>Loading...</span>
+                                                    ) : (
+                                                        <>
+                                                            {email}
+                                                        </>
+                                                    )}
                                                 </p>
                                             </div>
                                         </li>
                                         <li>
-                                            <a
-                                                href="#"
-                                                className="block px-4 py-2 text-sm bg-neutral-50 text-neutral-600 hover:bg-neutral-900/5 hover:text-neutral-900 focus-visible:bg-neutral-900/10 focus-visible:text-neutral-900 focus-visible:outline-none dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-50/5 dark:hover:text-white dark:focus-visible:bg-neutral-50/10 dark:focus-visible:text-white"
-                                            >
-                                                Dashboard
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a
-                                                href="#"
-                                                className="block px-4 py-2 text-sm bg-neutral-50 text-neutral-600 hover:bg-neutral-900/5 hover:text-neutral-900 focus-visible:bg-neutral-900/10 focus-visible:text-neutral-900 focus-visible:outline-none dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-50/5 dark:hover:text-white dark:focus-visible:bg-neutral-50/10 dark:focus-visible:text-white"
-                                            >
-                                                Subscription
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a
-                                                href="#"
+                                            <Link
+                                                href={'/settings'}
                                                 className="block px-4 py-2 text-sm bg-neutral-50 text-neutral-600 hover:bg-neutral-900/5 hover:text-neutral-900 focus-visible:bg-neutral-900/10 focus-visible:text-neutral-900 focus-visible:outline-none dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-50/5 dark:hover:text-white dark:focus-visible:bg-neutral-50/10 dark:focus-visible:text-white"
                                             >
                                                 Settings
-                                            </a>
+                                            </Link>
                                         </li>
                                         <li>
-                                            <a
-                                                href="#"
-                                                className="block px-4 py-2 text-sm bg-neutral-50 text-neutral-600 hover:bg-neutral-900/5 hover:text-neutral-900 focus-visible:bg-neutral-900/10 focus-visible:text-neutral-900 focus-visible:outline-none dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-50/5 dark:hover:text-white dark:focus-visible:bg-neutral-50/10 dark:focus-visible:text-white"
+                                            <div
+                                                onClick={handleLogOut}
+                                                className="block px-4 py-2 text-sm bg-neutral-50 text-neutral-600 hover:bg-neutral-900/5 hover:text-neutral-900 focus-visible:bg-neutral-900/10 focus-visible:text-neutral-900 focus-visible:outline-none dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-50/5 dark:hover:text-white dark:focus-visible:bg-neutral-50/10 dark:focus-visible:text-white cursor-pointer"
                                             >
                                                 Sign Out
-                                            </a>
+                                            </div>
                                         </li>
                                     </ul>
                                 )}

@@ -6,6 +6,7 @@ export interface IUser extends Document {
     password: string;
     verified: boolean;
     otp: number;
+    profilePhoto: string;
 }
 
 const UserSchema: Schema = new Schema({
@@ -13,7 +14,8 @@ const UserSchema: Schema = new Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     verified: { type: Boolean, required: true, default: false },
-    otp: { type: Number, required: true, default: 0 }
+    otp: { type: Number, required: true, default: 0 },
+    profilePhoto: { type: String, default: '' },
 }, {
     timestamps: true
 }

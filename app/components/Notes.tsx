@@ -32,7 +32,6 @@ const Notes: React.FC = () => {
             if (latestTextValue && latestTitle) {
                 const token = getAuthToken();
                 if (!token) {
-                    console.error('No auth token found');
                     return;
                 }
                 const newNote = {
@@ -75,7 +74,7 @@ const Notes: React.FC = () => {
 
     return (
         <div ref={noteRef} className="absolute top-[20%] left-1/2 w-1/3 -translate-x-1/2 p-1 bg-[#202124] shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)] rounded-md text-gray-300 border border-[#969696] flex flex-col">
-            <form className="flex flex-col">
+            <div className="flex flex-col">
                 {isTitleVisible && (
                     <input
                         type="text"
@@ -94,7 +93,7 @@ const Notes: React.FC = () => {
                     className="w-full p-1 font-bold bg-transparent border-none outline-none resize-none text-sm text-[#E8EAED] mb-2"
                     rows={1}
                 ></textarea>
-            </form>
+            </div>
         </div>
     );
 };

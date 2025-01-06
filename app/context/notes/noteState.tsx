@@ -41,7 +41,6 @@ const NoteState: React.FC<NoteStateProps> = ({ children }) => {
     const getAllNotes = async (): Promise<void> => {
         const token = getAuthToken();
         if (!token) {
-            console.error("No auth token found.");
             return;
         }
 
@@ -72,7 +71,6 @@ const NoteState: React.FC<NoteStateProps> = ({ children }) => {
     const addNotes = async (note: NoteData): Promise<void> => {
         const token = getAuthToken();
         if (!token) {
-            console.error("No auth token found.");
             return;
         }
 
@@ -103,7 +101,6 @@ const NoteState: React.FC<NoteStateProps> = ({ children }) => {
         }
         const token = getAuthToken();
         if (!token) {
-            console.error("No auth token found.");
             return;
         }
 

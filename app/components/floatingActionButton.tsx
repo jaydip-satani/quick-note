@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link';
-import { useState } from 'react';
-
+import { useEffect, useState } from 'react';
+import { globalUser } from '@/app/context/user/userContext';
 const Sidebar: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     let timeOfDay
@@ -13,6 +13,11 @@ const Sidebar: React.FC = () => {
     } else {
         timeOfDay = 'Good Evening ';
     }
+    const { name, loading, fetchUserData } = globalUser();
+    useEffect(() => {
+        fetchUserData();
+    }, [])
+
     return (
         <div className="text-[#E8EAED] bg-gray-100  dark:bg-dark dark:text-light">
             <div
@@ -33,7 +38,19 @@ const Sidebar: React.FC = () => {
                     <div className="flex items-center justify-between flex-shrink-0 w-64 p-4">
                         <div className="relative overflow-hidden w-48">
                             <div className="animate-marquee whitespace-nowrap">
-                                {timeOfDay}Jaydip</div>
+                                <div>
+                                    {loading ? (
+                                        <span>Loading...</span>
+                                    ) : (
+                                        <>
+                                            {timeOfDay}
+                                            {name ? name.charAt(0).toUpperCase() + name.slice(1) : ''}
+                                        </>
+                                    )}
+                                </div>
+
+                            </div>
+
                         </div>
                         <button
                             onClick={() => setIsSidebarOpen(false)}
@@ -97,26 +114,6 @@ const Sidebar: React.FC = () => {
                             <span>Secure Notes</span>
                         </Link>
                     </nav>
-                    <div className="flex-shrink-0 p-4">
-                        <button className="flex items-center space-x-2">
-                            <svg
-                                aria-hidden="true"
-                                className="w-6 h-6"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                                />
-                            </svg>
-                            <span>Logout</span>
-                        </button>
-                    </div>
                 </div>
             </div>
             <main className="flex flex-col items-center justify-center flex-1">
