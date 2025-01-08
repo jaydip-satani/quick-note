@@ -21,6 +21,30 @@ const page: React.FC = () => {
                 },
                 body: JSON.stringify({ email, password }),
             });
+            if (response.status === 307) {
+                try {
+                    const sendEmail = await fetch('/api/sendEmail', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name, email }),
+                    }).then(async (response) => {
+                        const data = await response.json();
+                        const { authtoken } = data;
+                        if (authtoken === undefined) {
+                            return;
+                        }
+                        router.push(`/auth/verification?token=${authtoken}`);
+                    }
+                    ).catch((error) => {
+                        console.log(error)
+                    });
+                } catch (error) {
+
+                }
+                return;
+            }
             if (!response.ok) {
                 throw new Error('Login failed. Please check your credentials.');
             }

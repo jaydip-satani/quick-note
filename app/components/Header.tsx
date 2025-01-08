@@ -111,10 +111,11 @@ const Navbar: React.FC = () => {
                                     aria-controls="userMenu"
                                 >
                                     <img
-                                        src={profilePhoto ?? undefined}
+                                        src={profilePhoto || '/default.jpg'}
                                         alt="User Profile"
                                         className="object-cover rounded-full size-10"
                                     />
+
                                 </button>
 
                                 {(userDropDownIsOpen || openWithKeyboard) && (

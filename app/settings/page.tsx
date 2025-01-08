@@ -5,6 +5,8 @@ import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '@/app/utils/cropImage';
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Image from 'next/image';
+
 const Page: React.FC = () => {
     const { name, email, profilePhoto, loading, fetchUserData } = globalUser();
     const [newName, setNewName] = useState('');
@@ -51,6 +53,33 @@ const Page: React.FC = () => {
         setAuthToken(token);
         fetchUserData();
     }, []);
+    const handleRemove = async () => {
+        try {
+            if (!authToken) {
+                console.log('No auth token available');
+                return;
+            }
+            const response = await fetch('/api/updateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth-token': authToken,
+                },
+                body: JSON.stringify({
+                    profilePhoto: '/default.jpg',
+                }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                fetchUserData();
+                dataSaved();
+            } else {
+                console.log('Error removing profile:', data);
+            }
+        } catch (error) {
+            console.log('Error Removing changes:', error);
+        }
+    }
     const onCropComplete = async (croppedArea: any, croppedAreaPixels: any) => {
         try {
             const croppedImg = await getCroppedImg(image ?? '', croppedAreaPixels);
@@ -134,10 +163,12 @@ const Page: React.FC = () => {
                             <h2 className="pl-6 text-2xl font-bold sm:text-xl">Public Profile</h2>
                             <div className="grid max-w-2xl mx-auto mt-8">
                                 <div className="flex flex-col items-center space-y-5 sm:flex-row sm:space-y-0">
-                                    <img
+                                    <Image
                                         className="object-cover w-40 h-40 p-1 rounded-full ring-2 ring-indigo-300"
-                                        src={croppedImage || profilePhoto || 'https://via.placeholder.com/150'}
+                                        src={croppedImage || profilePhoto || '/default.jpg'}
                                         alt="Avatar"
+                                        width={40}
+                                        height={40}
                                     />
                                     <div className="flex flex-col space-y-5 sm:ml-8">
                                         <label className="py-3.5 px-7 text-base font-medium text-white focus:outline-none bg-indigo-700 rounded-lg border border-indigo-500 hover:bg-indigo-600 focus:ring-4 focus:ring-indigo-300 cursor-pointer">
@@ -149,6 +180,18 @@ const Page: React.FC = () => {
                                                 onChange={handleImageChange}
                                             />
                                         </label>
+                                        <div className='flex space-x-2'>
+                                            <svg
+                                                onClick={handleRemove}
+                                                className="w-6 h-6 cursor-pointer"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path fill="currentColor" d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13z" />
+                                                <path fill="currentColor" d="M9 8h2v9H9zm4 0h2v9h-2z" />
+                                            </svg>
+                                            <span>Remove Picture</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="items-center mt-8 sm:mt-14">
@@ -166,7 +209,7 @@ const Page: React.FC = () => {
                                                 onChange={(e) => setNewName(e.target.value)}
                                                 id="first_name"
                                                 className="bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
-                                                placeholder="Your first name"
+                                                placeholder="Your name"
                                                 required
                                             />
                                         </div>
@@ -181,10 +224,9 @@ const Page: React.FC = () => {
                                         <input
                                             type="email"
                                             id="email"
-                                            className="bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
+                                            className="bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 cursor-not-allowed"
                                             placeholder="your.email@mail.com"
                                             defaultValue={email ? email : ''}
-                                            required
                                             readOnly
                                         />
                                     </div>

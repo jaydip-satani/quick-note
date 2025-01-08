@@ -36,7 +36,7 @@ const Page: React.FC = () => {
     const [currentState, setCurrentState] = useState<AnimationState>(AnimationState.Fingerprint);
     const [animationComplete, setAnimationComplete] = useState(false);
     const [isClient, setIsClient] = useState(false);
-    const [isLoop, setIsLoop] = useState(true);
+    // const [isLoop, setIsLoop] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter();
 
@@ -61,13 +61,13 @@ const Page: React.FC = () => {
 
             if (!response.ok) {
                 setCurrentState(AnimationState.Failure);
-                setIsLoop(false);
+                // setIsLoop(false);
                 return;
             }
 
             const data = await response.json();
             setCurrentState(AnimationState.Success);
-            setIsLoop(false);
+            // setIsLoop(false);
             setTimeout(() => {
                 setIsAuthenticated(true);
                 getAllNotes();
@@ -115,7 +115,7 @@ const Page: React.FC = () => {
                                 <div className="w-30 h-30">
                                     <Player
                                         autoplay
-                                        loop={isLoop}
+                                        loop={true}
                                         src={currentAnimation}
                                         onEvent={(event) => {
                                             if (event === 'complete') {

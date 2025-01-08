@@ -28,7 +28,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: 'Incorrect credential' }, { status: 400 });
         }
         if (!user.verified) {
-            return NextResponse.json({ message: 'Account not verified' }, { status: 400 });
+            return NextResponse.json({ message: 'Account not verified' }, { status: 307 });
         }
         const data = {
             user: {
