@@ -18,7 +18,7 @@ export async function POST(req: Request) {
         if (!user) {
             return NextResponse.json({ message: 'Incorrect credential' }, { status: 400 });
         }
-        const comparePassword = await bcrypt.compare(passcode, user.password)
+        const comparePassword = await bcrypt.compare(passcode, user.securePin)
         if (!comparePassword) {
             return NextResponse.json({ message: 'Incorrect credential' }, { status: 400 });
         }

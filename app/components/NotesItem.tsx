@@ -141,20 +141,32 @@ const NotesItem: React.FC<NotesItemProps> = ({ note }) => {
                         className="w-full max-w-lg bg-opacity-20 backdrop-blur-sm bg-[#202124] rounded-lg p-6 shadow-lg border border-[#696969]"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <input
+                        {!note.bin ? <input
                             type="text"
                             value={selectedNote.noteTitle}
                             onChange={(e) => handleChange('noteTitle', e.target.value)}
                             className="w-full bg-transparent text-lg font-semibold mb-4 outline-none border-none text-[#E8EAED]"
                             placeholder="Title"
-                        />
-                        <textarea
+                        /> : <input
+                            type="text"
+                            value={selectedNote.noteTitle}
+                            onChange={(e) => handleChange('noteTitle', e.target.defaultValue)}
+                            className="w-full bg-transparent text-lg font-semibold mb-4 outline-none border-none text-[#E8EAED]"
+                            placeholder="Title"
+                        />}
+                        {!note.bin ? <textarea
                             value={selectedNote.noteData}
                             onChange={(e) => handleChange('noteData', e.target.value)}
                             rows={10}
                             className="w-full bg-transparent resize-none outline-none border-none text-[#E8EAED]"
                             placeholder="Take a note..."
-                        />
+                        /> : <textarea
+                            value={selectedNote.noteData}
+                            onChange={(e) => handleChange('noteData', e.target.defaultValue)}
+                            rows={10}
+                            className="w-full bg-transparent resize-none outline-none border-none text-[#E8EAED]"
+                            placeholder="Take a note..."
+                        />}
                     </div>
                 </div>
             )}

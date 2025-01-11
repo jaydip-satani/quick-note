@@ -10,28 +10,34 @@ import Image from 'next/image';
 const Page: React.FC = () => {
     const { name, email, profilePhoto, loading, fetchUserData } = globalUser();
     const [newName, setNewName] = useState('');
+    const [exsitingPin, setExsitingPin] = useState('');
+    const [newPin, setNewPin] = useState('');
+    const [confirmNewPin, setConfirmNewPin] = useState('');
     const [image, setImage] = useState<string | null>(null);
     const [croppedImage, setCroppedImage] = useState<string | null>(null);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
     const [cropModalOpen, setCropModalOpen] = useState(false);
     const [authToken, setAuthToken] = useState<string | null>(null);
-
-    const dataSaved = () => {
-        toast.info("Data saved ", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: "dark",
-            transition: Bounce,
-        });
-    };
-    const inProgress = () => {
-        toast.info("In Progress ", {
+    const [accountSettings, setAccountSettings] = useState<boolean>(false);
+    const [pinMsg, setPinMsg] = useState('');
+    useEffect(() => {
+        if (pinMsg) {
+            toast.info(pinMsg, {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                theme: 'dark',
+                transition: Bounce,
+            });
+        }
+    }, [pinMsg]);
+    const failed = () => {
+        toast.error('failed to update', {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,
@@ -72,7 +78,7 @@ const Page: React.FC = () => {
             const data = await response.json();
             if (response.ok) {
                 fetchUserData();
-                dataSaved();
+                setPinMsg('Data saved');
             } else {
                 console.log('Error removing profile:', data);
             }
@@ -80,15 +86,11 @@ const Page: React.FC = () => {
             console.log('Error Removing changes:', error);
         }
     }
-    const onCropComplete = async (croppedArea: any, croppedAreaPixels: any) => {
-        try {
-            const croppedImg = await getCroppedImg(image ?? '', croppedAreaPixels);
-            setCroppedImage(croppedImg);
-            setCropModalOpen(false);
-        } catch (error) {
-            console.log('Error cropping image:', error);
-        }
+    const onCropComplete = (_croppedArea: any, croppedAreaPixels: any) => {
+        setCroppedAreaPixels(croppedAreaPixels);
     };
+
+
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -101,7 +103,56 @@ const Page: React.FC = () => {
             reader.readAsDataURL(file);
         }
     };
+    const handleAccount = () => {
+        setAccountSettings(true);
+    }
+    const handlePublic = () => {
+        setAccountSettings(false);
+    }
+    const savePin = async () => {
+        if (newPin !== confirmNewPin) {
+            setPinMsg(`password doesn't match`)
+            return;
+        }
+        if (!newPin || !exsitingPin || !confirmNewPin) {
+            setPinMsg('Please enter a valid password');
+            return;
+        }
 
+        try {
+            if (!authToken) {
+                console.log('No auth token available');
+                return;
+            }
+            const response = await fetch('/api/setPin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth-token': authToken,
+                },
+                body: JSON.stringify({
+                    securePin: exsitingPin,
+                    newSecurePin: newPin,
+                    confirmNewSecurePin: confirmNewPin
+                }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                fetchUserData();
+                setPinMsg('Pin updated')
+                setExsitingPin('')
+                setConfirmNewPin('')
+                setNewPin('')
+            } else {
+                failed()
+                console.log('Error updating Pin');
+            }
+        } catch (error) {
+            failed()
+            console.log('Error saving pin:');
+        }
+    }
     const saveChange = async () => {
         const updatedName = newName || name;
         const profilePhotoToSave = croppedImage;
@@ -127,11 +178,13 @@ const Page: React.FC = () => {
             const data = await response.json();
             if (response.ok) {
                 fetchUserData();
-                dataSaved();
+                setPinMsg('Data saved');
             } else {
+                failed()
                 console.log('Error updating profile:', data);
             }
         } catch (error) {
+            failed()
             console.log('Error saving changes:', error);
         }
     };
@@ -143,21 +196,27 @@ const Page: React.FC = () => {
                 <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">
                     <div className="sticky flex flex-col gap-2 p-4 text-sm border-r border-gray-700 top-12">
                         <h2 className="pl-3 mb-4 text-2xl font-semibold">Settings</h2>
-                        <a
-                            href="#"
-                            className="flex items-center px-3 py-2.5 font-bold bg-gray-800 text-indigo-300 border rounded-full hover:bg-gray-700"
+                        <div
+                            onClick={handlePublic}
+                            className={`flex items-center cursor-pointer px-3 py-2.5 font-bold  rounded-full ${!accountSettings
+                                ? 'bg-gray-800 text-indigo-300 hover:bg-gray-700 border'
+                                : 'text-gray-300 hover:text-indigo-300 hover:border'
+                                }`}
                         >
                             Public Profile
-                        </a>
+                        </div>
                         <div
-                            onClick={inProgress}
-                            className="flex items-center px-3 py-2.5 font-semibold text-gray-300 hover:text-indigo-300 hover:border hover:rounded-full"
+                            onClick={handleAccount}
+                            className={`flex items-center cursor-pointer px-3 py-2.5 font-bold  rounded-full ${accountSettings
+                                ? 'bg-gray-800 text-indigo-300 hover:bg-gray-700 border'
+                                : 'text-gray-300 hover:text-indigo-300 hover:border'
+                                }`}
                         >
                             Account Settings
                         </div>
                     </div>
                 </aside>
-                <main className="w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
+                {!accountSettings ? <main className="w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
                     <div className="p-2 md:p-4">
                         <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
                             <h2 className="pl-6 text-2xl font-bold sm:text-xl">Public Profile</h2>
@@ -207,7 +266,6 @@ const Page: React.FC = () => {
                                                 type="text"
                                                 value={newName === '' ? (name || '') : newName}
                                                 onChange={(e) => setNewName(e.target.value)}
-                                                id="first_name"
                                                 className="bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
                                                 placeholder="Your name"
                                                 required
@@ -243,30 +301,125 @@ const Page: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                </main>
+                </main> : <main className="w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
+                    <div className="p-2 md:p-4">
+                        <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
+                            <h2 className="pl-6 text-2xl font-bold sm:text-xl">Account Settings</h2>
+                            <div className="grid max-w-2xl mx-auto mt-8">
+                                <div className="flex flex-col items-center space-y-5 sm:flex-row sm:space-y-0">
+                                    <Image
+                                        className="object-cover w-40 h-40 p-1 rounded-full ring-2 ring-indigo-300"
+                                        src={croppedImage || profilePhoto || '/default.jpg'}
+                                        alt="Avatar"
+                                        width={40}
+                                        height={40}
+                                    />
+                                </div>
+                                <div className="items-center mt-8 sm:mt-14">
+                                    <div className="contianer m-1">
+                                        Change Secure Pin
+                                    </div>
+                                    <div className="flex flex-col items-center w-full mb-2 space-x-0 space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0 sm:mb-6">
+                                        <div className="w-full">
+                                            <input
+                                                type="password"
+                                                value={exsitingPin}
+                                                onChange={(e) => setExsitingPin(e.target.value)}
+                                                className="bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
+                                                placeholder="Exsiting Pin"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="w-full">
+                                            <input
+                                                type="password"
+                                                value={newPin}
+                                                onChange={(e) => setNewPin(e.target.value)}
+                                                className="bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
+                                                placeholder="New Pin"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="w-full">
+                                            <input
+                                                type="password"
+                                                value={confirmNewPin}
+                                                onChange={(e) => setConfirmNewPin(e.target.value)}
+                                                className="bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
+                                                placeholder="Confirm New Pin"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="mb-2 sm:mb-6">
+                                        <label
+                                            htmlFor="email"
+                                            className="block mb-2 text-sm font-medium text-gray-300"
+                                        >
+                                            Your email
+                                        </label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            className="bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 cursor-not-allowed"
+                                            placeholder="your.email@mail.com"
+                                            defaultValue={email ? email : ''}
+                                            readOnly
+                                        />
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button
+                                            type="submit"
+                                            onClick={savePin}
+                                            className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                                        >
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>}
             </div>
 
             {cropModalOpen && (
-                <div className="fixed top-0 left-0 z-50 w-full h-full bg-black bg-opacity-75 flex items-center justify-center">
-                    <div className="bg-gray-800 p-4 rounded-lg">
-                        <Cropper
-                            image={image ?? undefined}
-                            crop={crop}
-                            zoom={zoom}
-                            aspect={1}
-                            onCropChange={setCrop}
-                            onZoomChange={setZoom}
-                            onCropComplete={onCropComplete}
-                        />
-                        <button
-                            className="mt-4 text-white bg-indigo-700 px-4 py-2 rounded-lg"
-                            onClick={() => setCropModalOpen(false)}
-                        >
-                            Cancel
-                        </button>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-xl">
+                        <h3 className="text-white text-lg mb-4">Crop Image</h3>
+                        <div className="relative h-64 w-full bg-black">
+                            <Cropper
+                                image={image!}
+                                crop={crop}
+                                zoom={zoom}
+                                aspect={1} // Maintain square aspect ratio
+                                onCropChange={setCrop}
+                                onZoomChange={setZoom}
+                                onCropComplete={onCropComplete}
+                            />
+                        </div>
+                        <div className="flex justify-end mt-4 space-x-2">
+                            <button
+                                onClick={() => setCropModalOpen(false)}
+                                className="text-gray-300 bg-gray-600 px-4 py-2 rounded-lg hover:bg-gray-500"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    const croppedImg = await getCroppedImg(image!, croppedAreaPixels!);
+                                    setCroppedImage(croppedImg);
+                                    setCropModalOpen(false);
+                                }}
+                                className="text-white bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-500"
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
+
         </>
     );
 };

@@ -59,6 +59,9 @@ export async function POST(req: Request) {
   <h2 class="otp" style="background: linear-gradient(to right, #00bc69 0, #00bc88 50%, #00bca8 100%); margin: 0 auto; width: max-content; padding: 0 10px; color: #fff; border-radius: 4px;">${otp}</h2>
   <p style="font-size: 0.9em">
     <strong>One-Time Password (OTP) is valid for 3 minutes.</strong>
+    <p style="color: red; font-weight: bold;">
+  Note: Your secure notes password is the same as your login password. You can change it after signing in by navigating to <strong>Profile Icon > Account Settings > Change Secure PIN</strong>.
+</p>
     <br />
     <br />
     If you did not initiate this login request, please disregard this

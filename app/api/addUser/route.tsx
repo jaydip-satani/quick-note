@@ -36,6 +36,7 @@ export async function POST(request: Request) {
             name,
             email: validEmail,
             password: hashedPassword,
+            securePin: hashedPassword,
         });
         const savedUser = await newUser.save();
         return NextResponse.json({ message: 'User created Successfully' }, { status: 201 });
