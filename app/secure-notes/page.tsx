@@ -9,7 +9,6 @@ import fingerprint from '@/public/animations/fingerprint.json';
 import { NoteContext } from '../context/notes/noteState';
 import NotesItem from '../components/NotesItem';
 import Navbar from '../components/Header';
-import Sidebar from '../components/floatingActionButton';
 
 const getAuthToken = (): string | null => {
     const match = document.cookie.match(new RegExp('(^| )authToken=([^;]+)'));
@@ -177,7 +176,6 @@ const Page: React.FC = () => {
             ) : (
                 <>
                     <Navbar />
-                    <Sidebar />
                     <div className="absolute top-[20%] text-center left-1/2 w-auto -translate-x-1/2 p-3 bg-[#202124] shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)] rounded-xl text-gray-300 border border-[#969696] flex flex-col text-2xl">
                         <h1>Secured Notes</h1>
                     </div>

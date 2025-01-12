@@ -7,7 +7,7 @@ interface UserContextType {
     loading: boolean;
     error: string | null;
     setUserData: (name: string, email: string, profilePhoto: string) => void;
-    fetchUserData: () => Promise<void>;  // No arguments required here
+    fetchUserData: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -20,7 +20,6 @@ const getAuthToken = (): string | null => {
     return match ? match[2] : null;
 };
 
-// Move the fetchUserData function outside the component
 const fetchUserData = async (
     setUserData: (name: string, email: string, profilePhoto: string) => void,
     setLoading: (loading: boolean) => void,
@@ -77,13 +76,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setProfilePhoto(profilePhoto);
     };
 
-    // Use the fetchUserData function within the component
     const fetchData = async () => {
         await fetchUserData(setUserData, setLoading, setError);
     };
 
     useEffect(() => {
-        // Fetch user data when the component mounts
         fetchData();
     }, []);
 

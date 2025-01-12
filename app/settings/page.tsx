@@ -193,12 +193,12 @@ const Page: React.FC = () => {
         <>
             <ToastContainer />
             <div className="absolute top-[10%] bg-[#202124] w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-white">
-                <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">
+                <aside className="py-4 md:w-1/3 lg:w-1/4 w-full md:block">
                     <div className="sticky flex flex-col gap-2 p-4 text-sm border-r border-gray-700 top-12">
                         <h2 className="pl-3 mb-4 text-2xl font-semibold">Settings</h2>
                         <div
                             onClick={handlePublic}
-                            className={`flex items-center cursor-pointer px-3 py-2.5 font-bold  rounded-full ${!accountSettings
+                            className={`flex items-center cursor-pointer px-3 py-2.5 font-bold rounded-full ${!accountSettings
                                 ? 'bg-gray-800 text-indigo-300 hover:bg-gray-700 border'
                                 : 'text-gray-300 hover:text-indigo-300 hover:border'
                                 }`}
@@ -207,7 +207,7 @@ const Page: React.FC = () => {
                         </div>
                         <div
                             onClick={handleAccount}
-                            className={`flex items-center cursor-pointer px-3 py-2.5 font-bold  rounded-full ${accountSettings
+                            className={`flex items-center cursor-pointer px-3 py-2.5 font-bold rounded-full ${accountSettings
                                 ? 'bg-gray-800 text-indigo-300 hover:bg-gray-700 border'
                                 : 'text-gray-300 hover:text-indigo-300 hover:border'
                                 }`}

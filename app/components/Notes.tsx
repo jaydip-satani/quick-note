@@ -73,7 +73,10 @@ const Notes: React.FC = () => {
     }, [textValue]);
 
     return (
-        <div ref={noteRef} className="absolute top-[20%] left-1/2 w-1/3 -translate-x-1/2 p-1 bg-[#202124] shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)] rounded-md text-gray-300 border border-[#969696] flex flex-col">
+        <div
+            ref={noteRef}
+            className="absolute top-[20%] left-1/2 lg:2/3 sm:w-2/3 md:w-1/3 -translate-x-1/2 p-1 bg-[#202124] shadow-[0_6px_18px_4px_rgba(0,0,0,0.3)] rounded-md text-gray-300 border border-[#969696] flex flex-col"
+        >
             <div className="flex flex-col">
                 {isTitleVisible && (
                     <input

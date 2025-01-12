@@ -50,7 +50,7 @@ export default function RootLayout({
         className={` bg-[#202124] ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <UserProvider>
-          {NavbarPaths.includes(pathname) && <><Navbar /><Sidebar /></>}
+          {NavbarPaths.includes(pathname) && <><Navbar /></>}
           <NoteState>
             {children}
           </NoteState>
