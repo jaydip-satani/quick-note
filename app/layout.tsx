@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "./components/Header";
 import { usePathname } from "next/navigation";
-import Sidebar from "./components/floatingActionButton";
 import NoteState from "./context/notes/noteState";
 import Head from "next/head";
 import { useEffect } from "react";
@@ -35,6 +34,8 @@ export default function RootLayout({
     "/secure-notes": "Secure Notes ",
     "/archive": "Archive ",
     "/bin": "Bin ",
+    "/resetPassword": "Reset Password ",
+    "/settings": "Settings ",
   };
 
   const defaultTitle = "Notely";

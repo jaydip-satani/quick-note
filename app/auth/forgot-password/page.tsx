@@ -1,7 +1,33 @@
+'use client'
 import Link from 'next/link'
-import React from 'react'
-
+import React, { useState } from 'react'
 const page: React.FC = () => {
+    const [email, setEmail] = useState('')
+    const [loading, setLoading] = useState(false);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        try {
+            setLoading(true);
+            const response = await fetch('/api/forgotEmail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+            if (!response.ok) {
+                throw new Error('Something went wrong... Try again later ');
+            }
+            alert('Password link is successfully sent');
+            setEmail('')
+        } catch (error) {
+            console.log(error)
+        }
+        finally {
+            setLoading(false)
+        }
+        return;
+    }
     return (
         <div className="h-screen w-screen flex justify-center items-center">
             <div className="grid gap-8">
@@ -13,13 +39,15 @@ const page: React.FC = () => {
                         <h1 className="pt-8 pb-6 font-bold dark:text-gray-400 text-5xl text-center cursor-default">
                             Forgot Password
                         </h1>
-                        <form action="#" method="post" className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label htmlFor="email" className="mb-2  dark:text-gray-400 text-lg">
                                     Email
                                 </label>
                                 <input
                                     id="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     className="border p-3 dark:bg-gray-700 dark:text-gray-300  dark:border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                                     type="email"
                                     placeholder="Email"
@@ -31,7 +59,7 @@ const page: React.FC = () => {
                                 className="bg-gradient-to-r dark:text-gray-300 from-blue-500 to-purple-500 shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                                 type="submit"
                             >
-                                Reset
+                                {loading ? 'Reset...' : 'Reset'}
                             </button>
                         </form>
                         <div className="flex flex-col mt-4 items-center justify-center text-sm">
@@ -59,14 +87,14 @@ const page: React.FC = () => {
                                     </span>
                                 </a>
                                 and
-                                <a
+                                <Link href={'#'}
                                     className="group text-blue-400 transition-all duration-100 ease-in-out"
 
                                 >
                                     <span className="cursor-pointer bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                                         Privacy Policy
                                     </span>
-                                </a>
+                                </Link>
                             </p>
                         </div>
                     </div>
