@@ -24,6 +24,9 @@ export async function POST(request: Request) {
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 400 });
         }
+        if (user instanceof NextResponse) {
+            return user;
+        }
         await dbConnect()
         const sPin = await User.findById(user.id)
         const comparePassword = await bcrypt.compare(securePin, sPin.securePin)

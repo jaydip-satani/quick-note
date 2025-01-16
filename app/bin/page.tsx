@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from 'react'
 import { NoteContext } from '../context/notes/noteState';
 import NotesItem from '../components/NotesItem';
 
-const page: React.FC = () => {
+const Page: React.FC = () => {
     const context = useContext(NoteContext);
     if (!context) {
         throw new Error('NoteContext is not provided. Ensure Notes is wrapped in NoteState.');
@@ -12,7 +12,7 @@ const page: React.FC = () => {
 
     useEffect(() => {
         getAllNotes();
-    }, []);
+    }, [getAllNotes]);
 
     return (
         <>
@@ -41,4 +41,4 @@ const page: React.FC = () => {
 
 }
 
-export default page
+export default Page

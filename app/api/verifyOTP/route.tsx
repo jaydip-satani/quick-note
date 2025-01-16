@@ -27,8 +27,8 @@ export async function POST(request: Request) {
         } else {
             return NextResponse.json({ success: false, message: 'Invalid OTP' }, { status: 400 });
         }
-    } catch (error: any) {
+    } catch (error) {
         console.error(error);
-        return NextResponse.json({ message: 'Invalid request', error: error.message }, { status: 400 });
+        return NextResponse.json({ message: 'Invalid request', error: error }, { status: 400 });
     }
 }

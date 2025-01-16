@@ -15,15 +15,15 @@ export async function POST(req: Request) {
   try {
     const validEmail = email.trim().toLowerCase();
     try {
-      let user = await User.findOne({ email: validEmail }).maxTimeMS(5000);
+      const user = await User.findOne({ email: validEmail }).maxTimeMS(5000);
       if (!user) {
         return NextResponse.json({ message: 'User not found' }, { status: 404 });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Query failed or timed out:', error);
-      return NextResponse.json({ message: 'User Not Registered: ' + error.message }, { status: 400 });
+      return NextResponse.json({ message: 'User Not Registered: ' + error }, { status: 400 });
     }
-    let response = await User.updateOne(
+    const response = await User.updateOne(
       { email: validEmail },
       { $set: { otp: otp } }
     );

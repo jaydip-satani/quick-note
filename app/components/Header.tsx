@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import logo from "../../assets/logo.svg"
 import Link from 'next/link'
-import { globalUser } from '@/app/context/user/userContext';
+import { useGlobalUser } from '@/app/context/user/userContext';
 import { useRouter } from 'next/navigation';
 const Navbar: React.FC = () => {
     const router = useRouter();
@@ -29,10 +29,10 @@ const Navbar: React.FC = () => {
             setOpenWithKeyboard(false);
         }
     };
-    const { name, email, profilePhoto, loading, fetchUserData } = globalUser();
+    const { name, email, profilePhoto, loading, fetchUserData } = useGlobalUser();
     useEffect(() => {
         fetchUserData();
-    }, [])
+    }, [fetchUserData])
 
     useEffect(() => {
         if (userDropDownIsOpen || openWithKeyboard) {
@@ -196,10 +196,12 @@ const Navbar: React.FC = () => {
                                     className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:focus-visible:outline-white"
                                     aria-controls="userMenu"
                                 >
-                                    <img
+                                    <Image
                                         src={profilePhoto || '/default.jpg'}
                                         alt="User Profile"
                                         className="object-cover rounded-full size-12"
+                                        width={6}
+                                        height={6}
                                     />
 
                                 </button>

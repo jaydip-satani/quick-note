@@ -30,26 +30,35 @@ const Page: React.FC = () => {
             if (!response.ok) {
                 throw new Error('Failed to create user...');
             }
-            const data = await response.json();
-            const sendEmail = await fetch('/api/sendEmail', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, email }),
-            }).then(async (response) => {
-                const data = await response.json();
+            try {
+                const sendEmailResponse = await fetch('/api/sendEmail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, email }),
+                });
+
+                if (!sendEmailResponse.ok) {
+                    throw new Error('Failed to send mail...');
+                }
+
+                const data = await sendEmailResponse.json();
                 const { authtoken } = data;
+
+                if (authtoken === undefined) {
+                    return;
+                }
+
                 router.push(`/auth/verification?token=${authtoken}`);
+            } catch (error: unknown) {
+                setError((error as Error).message);
             }
-            ).catch((error) => {
-                console.log(error)
-            });
             if (!response.ok) {
                 throw new Error('Failed to send mail...');
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError((err as Error).message);
         } finally {
             setLoading(false);
         }

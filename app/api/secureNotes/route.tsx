@@ -12,9 +12,12 @@ export async function POST(req: Request) {
     }
     await dbConnect();
     const userId = await fetchUser(req)
+    if (userId instanceof NextResponse) {
+        return userId;
+    }
     try {
         const { passcode } = await req.json();
-        let user = await User.findOne({ _id: userId.id })
+        const user = await User.findOne({ _id: userId.id })
         if (!user) {
             return NextResponse.json({ message: 'Incorrect credential' }, { status: 400 });
         }

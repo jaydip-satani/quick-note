@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
 
 interface UserContextType {
     name: string | null;
@@ -55,9 +55,13 @@ const fetchUserData = async (
         } else {
             setError('User data is incomplete');
         }
-    } catch (error) {
-        setError('Error fetching user data');
-        console.log(error);
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            setError(error.message || 'Error Fetching user data');
+        } else {
+            setError('Error Fetching user data');
+        }
+        console.error(error);
     } finally {
         setLoading(false);
     }
@@ -70,19 +74,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const setUserData = (name: string, email: string, profilePhoto: string) => {
+    const setUserData = useCallback((name: string, email: string, profilePhoto: string) => {
         setName(name);
         setEmail(email);
         setProfilePhoto(profilePhoto);
-    };
+    }, []);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         await fetchUserData(setUserData, setLoading, setError);
-    };
+    }, [setUserData]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     return (
         <UserContext.Provider value={{ name, email, profilePhoto, loading, error, setUserData, fetchUserData: fetchData }}>
@@ -91,10 +95,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-export const globalUser = () => {
+export const useGlobalUser = () => {
     const context = useContext(UserContext);
     if (!context) {
-        throw new Error('useUser must be used within a UserProvider');
+        throw new Error('useGlobalUser must be used within a UserProvider');
     }
     return context;
 };

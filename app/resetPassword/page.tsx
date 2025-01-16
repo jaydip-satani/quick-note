@@ -1,55 +1,80 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { jwtVerify } from 'jose';
 
-
-const ResetPasswordPage: React.FC = () => {
-    const [isTokenValid, setIsTokenValid] = useState<boolean | null>(false);
-    const [password, setPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
+// Custom Hook to handle the token verification logic
+function useTokenVerification(searchParams: URLSearchParams | null) {
+    const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const searchParams = useSearchParams();
-    const router = useRouter();
+
     useEffect(() => {
+        if (!searchParams) return;
+
         const verifyToken = async () => {
             const token = searchParams.get('token');
             const JWT_SECRET = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_EMAIL);
-            if (!JWT_SECRET) {
-                throw new Error('JWT_EMAIL environment variable is not defined');
-            }
-            if (token) {
-                try {
-                    await jwtVerify(token, JWT_SECRET);
-                    setIsTokenValid(true);
-                } catch (err) {
-                    setIsTokenValid(false);
-                    setError('The reset link has expired or is invalid.');
-                }
-            } else {
+
+            if (!token) {
+                setError('Token not found');
                 setIsTokenValid(false);
-                setError('No token provided.');
+                return;
+            }
+            if (!JWT_SECRET) {
+                setError('JWT_EMAIL environment variable is not defined');
+                setIsTokenValid(false);
+                return;
+            }
+
+            try {
+                await jwtVerify(token, JWT_SECRET);
+                setIsTokenValid(true);
+            } catch (err) {
+                setIsTokenValid(false);
+                setError('The reset link has expired or is invalid.');
+                console.log(err);
             }
         };
+
         verifyToken();
     }, [searchParams]);
 
+    return { isTokenValid, error };
+}
+
+// Suspense wrapper for handling loading state
+const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <Suspense fallback={<p className="text-white">Loading...</p>}>{children}</Suspense>
+);
+
+const ResetPasswordPage: React.FC = () => {
+    const searchParams = useSearchParams(); // Use this hook inside client-rendered components.
+    const { isTokenValid, error: tokenError } = useTokenVerification(searchParams);
+    const router = useRouter();
+
+    const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [error, setError] = useState<string | null>(null);
 
     const handlePasswordReset = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (password !== confirmPassword) {
             setError('Passwords do not match.');
             return;
         }
+
         try {
-            const token = searchParams.get('token');
+            const token = searchParams?.get('token');
             const response = await fetch('/api/resetPassword', {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ token, newPassword: password }),
-            })
+            });
+
             const data = await response.json();
             if (response.ok) {
                 alert('Password reset successfully!');
@@ -74,10 +99,7 @@ const ResetPasswordPage: React.FC = () => {
                 >
                     <h2 className="text-2xl font-bold mb-6 text-center">Reset Password</h2>
                     <div className="mb-4">
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium mb-1 text-gray-300"
-                        >
+                        <label htmlFor="password" className="block text-sm font-medium mb-1 text-gray-300">
                             New Password
                         </label>
                         <input
@@ -114,11 +136,19 @@ const ResetPasswordPage: React.FC = () => {
                     </button>
                 </form>
             ) : (
-                <p className="text-red-500">{error}</p>
+                <p className="text-red-500">{tokenError}</p>
             )}
         </div>
-
     );
 };
 
-export default ResetPasswordPage;
+// Wrap the page with Suspense for `useSearchParams`
+const PageWrapper: React.FC = () => {
+    return (
+        <SuspenseWrapper>
+            <ResetPasswordPage />
+        </SuspenseWrapper>
+    );
+};
+
+export default PageWrapper;

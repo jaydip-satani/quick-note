@@ -23,7 +23,7 @@ const NotesList = () => {
   const { notes, getAllNotes } = context;
   useEffect(() => {
     getAllNotes()
-  }, [])
+  }, [getAllNotes])
   return (
     <>
       <div className="relative min-h-screen flex items-center justify-center">

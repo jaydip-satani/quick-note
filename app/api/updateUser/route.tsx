@@ -8,6 +8,8 @@ export async function POST(req: Request) {
         const user = await fetchUser(req);
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 400 });
+        } if (user instanceof NextResponse) {
+            return user;
         }
 
         const { name, profilePhoto } = await req.json();
@@ -33,8 +35,8 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ name: userData.name, email: userData.email, profilePhoto: userData.profilePhoto });
 
-    } catch (error: any) {
-        console.log(error.message);
-        return NextResponse.json({ error: `Some error occurred: ${error.message}` }, { status: 400 });
+    } catch (error) {
+        console.log(error);
+        return NextResponse.json({ error: `Some error occurred: ${error}` }, { status: 400 });
     }
 }

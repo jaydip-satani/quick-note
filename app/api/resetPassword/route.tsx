@@ -5,7 +5,11 @@ import User from '@/models/User';
 import bcrypt from "bcryptjs";
 
 const jwtSignKey = process.env.NEXT_PUBLIC_JWT_EMAIL as string;
-
+interface JwtPayload {
+    email: string;
+    iat: number;
+    exp: number;
+}
 export async function POST(req: Request) {
     try {
         const { token, newPassword } = await req.json();
@@ -14,7 +18,7 @@ export async function POST(req: Request) {
         }
         await dbConnect();
         try {
-            const data: any = jwt.verify(token, jwtSignKey);
+            const data = jwt.verify(token, jwtSignKey) as JwtPayload;
             const salt = await bcrypt.genSalt(10)
             const hashedPassword = await bcrypt.hash(newPassword, salt);
             const updateData = await User.findOneAndUpdate(
@@ -32,13 +36,14 @@ export async function POST(req: Request) {
             );
 
         } catch (error) {
+            console.log(error)
             return NextResponse.json(
                 { error: "Please authenticate using a valid token" },
                 { status: 401 }
             );
         }
-    } catch (error: any) {
-        console.log(error.message);
-        return NextResponse.json({ error: `Some error occurred: ${error.message}` }, { status: 400 });
+    } catch (error) {
+        console.log(error);
+        return NextResponse.json({ error: `Some error occurred: ${error}` }, { status: 400 });
     }
 }

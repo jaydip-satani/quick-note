@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-const page: React.FC = () => {
+const Page: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [error, setError] = useState<string>('');
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -23,25 +23,28 @@ const page: React.FC = () => {
             });
             if (response.status === 307) {
                 try {
-                    const sendEmail = await fetch('/api/sendEmail', {
+                    const sendEmailResponse = await fetch('/api/sendEmail', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({ name, email }),
-                    }).then(async (response) => {
-                        const data = await response.json();
-                        const { authtoken } = data;
-                        if (authtoken === undefined) {
-                            return;
-                        }
-                        router.push(`/auth/verification?token=${authtoken}`);
-                    }
-                    ).catch((error) => {
-                        console.log(error)
                     });
-                } catch (error) {
 
+                    if (!sendEmailResponse.ok) {
+                        throw new Error('Failed to send email');
+                    }
+
+                    const data = await sendEmailResponse.json();
+                    const { authtoken } = data;
+
+                    if (authtoken === undefined) {
+                        return;
+                    }
+
+                    router.push(`/auth/verification?token=${authtoken}`);
+                } catch (error) {
+                    setError((error as Error).message);
                 }
                 return;
             }
@@ -54,8 +57,8 @@ const page: React.FC = () => {
                 document.cookie = `authToken=${authtoken}; path=/; SameSite=Strict; Secure;`
                 router.push('/');
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError((err as Error).message);
         } finally {
             setLoading(false);
         }
@@ -120,7 +123,7 @@ const page: React.FC = () => {
                         </form>
                         <div className="flex flex-col mt-4 items-center justify-center text-sm">
                             <h3 className="dark:text-gray-300">
-                                Don't have an account?
+                                Don&apos;t have an account?
                                 <Link href={'/auth/signup'} className="group text-blue-400 transition-all duration-100 ease-in-out">
                                     <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                                         Sign Up
@@ -135,4 +138,4 @@ const page: React.FC = () => {
     );
 };
 
-export default page;
+export default Page;

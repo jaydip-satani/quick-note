@@ -11,6 +11,9 @@ export async function POST(request: Request) {
         if (!user) {
             return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
         }
+        if (user instanceof NextResponse) {
+            return user;
+        }
 
         await dbConnect();
 
@@ -22,8 +25,7 @@ export async function POST(request: Request) {
 
         const savedNote = await note.save();
         return NextResponse.json(savedNote, { status: 200 });
-    } catch (error: any) {
-        console.log(error);
-        return NextResponse.json({ error: 'Some error occurred: ' + error.message }, { status: 400 });
+    } catch (error) {
+        return NextResponse.json({ error: 'Some error occurred: ' + error }, { status: 400 });
     }
 }

@@ -5,43 +5,42 @@ import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 
 export async function POST(req: Request) {
-    const JWT_TOKEN = process.env.NEXT_PUBLIC_JWT_EMAIL;
-    const baseURL = process.env.BASE_URL
-    if (!JWT_TOKEN) {
-        return NextResponse.json({ message: 'JWT_EMAIL environment variable is not defined' }, { status: 500 });
+  const JWT_TOKEN = process.env.NEXT_PUBLIC_JWT_EMAIL;
+  const baseURL = process.env.BASE_URL
+  if (!JWT_TOKEN) {
+    return NextResponse.json({ message: 'JWT_EMAIL environment variable is not defined' }, { status: 500 });
+  }
+
+  const { email } = await req.json();
+  dbConnect();
+
+  try {
+    const validEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: validEmail }).maxTimeMS(5000);
+    if (!user) {
+      return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
+    const name = user.name;
+    const resetToken = jwt.sign({ email: validEmail }, JWT_TOKEN, { expiresIn: '5m' });
 
-    const { email } = await req.json();
-    dbConnect();
+    const resetLink = `${baseURL}/resetPassword?token=${resetToken}`;
 
-    try {
-        const validEmail = email.trim().toLowerCase();
-        let user = await User.findOne({ email: validEmail }).maxTimeMS(5000);
-        if (!user) {
-            return NextResponse.json({ message: 'User not found' }, { status: 404 });
-        }
-        const name = user.name;
-        console.log(name)
-        const resetToken = jwt.sign({ email: validEmail }, JWT_TOKEN, { expiresIn: '5m' });
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER as string,
+        pass: process.env.EMAIL_PASS as string,
+      },
+    });
 
-        const resetLink = `${baseURL}/resetPassword?token=${resetToken}`;
-
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 587,
-            secure: false,
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER as string,
-                pass: process.env.EMAIL_PASS as string,
-            },
-        });
-
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Password Reset Request',
-            html: `
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset Request',
+      html: `
         <div class="container" style="max-width: 600px; padding: 20px; border-radius: 5px; line-height: 1.8;">
           <div class="header" style="border-bottom: 1px solid #eee;">
             <a style="font-size: 1.4em; color: #000; text-decoration: none; font-weight: 600;">Notely</a>
@@ -68,14 +67,14 @@ export async function POST(req: Request) {
           <strong>Notely</strong>
         </div>
       `,
-        };
+    };
 
-        await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 
-        return new Response(JSON.stringify({ success: true, message: 'Password reset link sent to email' }), { status: 200 });
+    return new Response(JSON.stringify({ success: true, message: 'Password reset link sent to email' }), { status: 200 });
 
-    } catch (error) {
-        console.error('Error sending email:', error);
-        return new Response(JSON.stringify({ success: false, error: 'Failed to send email' }), { status: 500 });
-    }
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return new Response(JSON.stringify({ success: false, error: 'Failed to send email' }), { status: 500 });
+  }
 }

@@ -1,5 +1,5 @@
 'use client'
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useCallback } from "react";
 
 interface NoteData {
     _id: string;
@@ -29,7 +29,6 @@ const NoteState: React.FC<NoteStateProps> = ({ children }) => {
     const getURL = "getNotes/";
     const addURL = "addNotes/";
     const updateURL = "updateNotes/";
-    const deleteURL = "deleteNotes/";
 
     const [notes, setNotes] = useState<NoteData[]>([]);
 
@@ -38,9 +37,10 @@ const NoteState: React.FC<NoteStateProps> = ({ children }) => {
         return match ? match[2] : null;
     };
 
-    const getAllNotes = async (): Promise<void> => {
+    const getAllNotes = useCallback(async (): Promise<void> => {
         const token = getAuthToken();
         if (!token) {
+            console.warn("No auth token found. User might not be authenticated.");
             return;
         }
 
@@ -54,15 +54,16 @@ const NoteState: React.FC<NoteStateProps> = ({ children }) => {
             });
 
             if (!response.ok) {
-                throw new Error(`Error: ${response.status} ${response.statusText}`);
+                console.error(`Failed to fetch notes: ${response.status} ${response.statusText}`);
+                return;
             }
 
-            const json: NoteData[] = await response.json();
-            setNotes(json);
+            const fetchedNotes: NoteData[] = await response.json();
+            setNotes(fetchedNotes);
         } catch (error) {
-            console.error("Failed to fetch notes:", error);
+            console.error("Error occurred while fetching notes:", error);
         }
-    };
+    }, []);
 
     const deleteNote = (id: string) => {
         setNotes(notes.filter((note) => note._id !== id));

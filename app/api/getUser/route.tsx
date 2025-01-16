@@ -19,7 +19,7 @@ export async function POST(request: Request) {
             );
         }
         dbConnect();
-        let user = await User.findOne({ email: validEmail })
+        const user = await User.findOne({ email: validEmail })
         if (!user) {
             return NextResponse.json({ message: 'Incorrect credential' }, { status: 400 });
         }

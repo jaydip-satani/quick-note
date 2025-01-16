@@ -48,7 +48,7 @@ const Notes: React.FC = () => {
                 setTextValue('');
             }
         }
-    }, [title, textValue]);
+    }, [title, textValue, addNotes]);
 
     useEffect(() => {
         document.addEventListener('click', handleClickOutside);

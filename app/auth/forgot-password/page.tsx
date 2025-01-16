@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import React, { useState } from 'react'
-const page: React.FC = () => {
+const Page: React.FC = () => {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false);
     const handleSubmit = async (e: React.FormEvent) => {
@@ -105,4 +105,4 @@ const page: React.FC = () => {
     )
 }
 
-export default page
+export default Page

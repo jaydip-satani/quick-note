@@ -1,21 +1,28 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { globalUser } from '@/app/context/user/userContext';
+import { useGlobalUser } from '@/app/context/user/userContext';
 import Cropper from 'react-easy-crop';
+import { Area } from 'react-easy-crop';
 import { getCroppedImg } from '@/app/utils/cropImage';
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
+interface CroppedAreaPixels {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
 
 const Page: React.FC = () => {
-    const { name, email, profilePhoto, loading, fetchUserData } = globalUser();
+    const { name, email, profilePhoto, fetchUserData } = useGlobalUser();
     const [newName, setNewName] = useState('');
     const [exsitingPin, setExsitingPin] = useState('');
     const [newPin, setNewPin] = useState('');
     const [confirmNewPin, setConfirmNewPin] = useState('');
     const [image, setImage] = useState<string | null>(null);
     const [croppedImage, setCroppedImage] = useState<string | null>(null);
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<CroppedAreaPixels | null>(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
     const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -58,7 +65,7 @@ const Page: React.FC = () => {
         const token = getAuthToken();
         setAuthToken(token);
         fetchUserData();
-    }, []);
+    }, [fetchUserData]);
     const handleRemove = async () => {
         try {
             if (!authToken) {
@@ -86,7 +93,7 @@ const Page: React.FC = () => {
             console.log('Error Removing changes:', error);
         }
     }
-    const onCropComplete = (_croppedArea: any, croppedAreaPixels: any) => {
+    const onCropComplete = (_croppedArea: Area, croppedAreaPixels: CroppedAreaPixels) => {
         setCroppedAreaPixels(croppedAreaPixels);
     };
 
@@ -137,7 +144,6 @@ const Page: React.FC = () => {
                 }),
             });
 
-            const data = await response.json();
             if (response.ok) {
                 fetchUserData();
                 setPinMsg('Pin updated')
@@ -150,7 +156,7 @@ const Page: React.FC = () => {
             }
         } catch (error) {
             failed()
-            console.log('Error saving pin:');
+            console.log('Error saving pin:' + error);
         }
     }
     const saveChange = async () => {
