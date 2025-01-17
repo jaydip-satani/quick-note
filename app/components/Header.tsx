@@ -62,18 +62,7 @@ const Navbar: React.FC = () => {
     return (
         <>
             <div
-                className={`fixed inset-y-0 z-10 flex w-80 opacity-80  transform transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} ease-linear`}>
-                <svg
-                    className="absolute inset-0 w-full h-full text-white"
-                    style={{ filter: 'drop-shadow(10px 0 10px #00000030)' }}
-                    preserveAspectRatio="none"
-                    viewBox="0 0 309 800"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path d="M268.487 0H0V800H247.32C207.957 725 207.975 492.294 268.487 367.647C329 243 314.906 53.4314 268.487 0Z"
-                        fill="#191a1e"
-                    />
-                </svg>
+                className={`fixed inset-y-0 z-10 flex bg-[#191a1e] w-60 opacity-80  transform transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} ease-linear`}>
                 <div className="absolute top-[10%] z-10 flex flex-col flex-1">
                     <nav className="flex flex-col flex-1 w-64 p-4 mt-4 gap-2 text-[#E9E9E9]">
                         <Link href={"/"} className="flex items-center space-x-2">

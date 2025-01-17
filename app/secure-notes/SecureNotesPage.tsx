@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { useRouter } from 'next/navigation';
@@ -91,7 +91,10 @@ const SecureNotesPage: React.FC = () => {
     if (!context) {
         throw new Error('NoteContext is not provided. Ensure Notes is wrapped in NoteState.');
     }
-    const { notes } = context;
+    const { notes, getAllNotes } = context;
+    useEffect(() => {
+        getAllNotes()
+    }, [getAllNotes])
 
     return (
         <div className="container">
