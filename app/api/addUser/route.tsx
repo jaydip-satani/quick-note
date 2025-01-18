@@ -1,12 +1,28 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/middleware/connect';
 import User from '@/models/User'
+import arcjet, { validateEmail } from "@arcjet/next";
 import bcrypt from "bcryptjs";
 import validator from "validator";
+const aj = arcjet({
+    key: process.env.ARCJET_KEY!,
+    rules: [
+        validateEmail({
+            mode: "LIVE",
+            deny: ["DISPOSABLE", "INVALID", "NO_MX_RECORDS"],
+        }),
+    ],
+});
 export async function POST(request: Request) {
     try {
         const { name, email, password, confirmPassword } = await request.json();
         const validEmail = email.trim().toLowerCase();
+        const decision = await aj.protect(request, {
+            email: validEmail,
+        });
+        if (decision.isDenied()) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
         if (password !== confirmPassword) {
             return NextResponse.json(
                 { error: "Password Doesn't Match" },
