@@ -134,7 +134,7 @@ const Navbar: React.FC = () => {
                                 />
                             </Link>
                             <span className="text-lg font-semibold tracking-wide text-[#E9E9E9] dark:text-gray-100">
-                                Notely
+                                Quick-Note
                             </span>
                         </div>
                         <div className="relative">

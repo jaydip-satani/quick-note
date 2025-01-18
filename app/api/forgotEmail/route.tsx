@@ -43,12 +43,12 @@ export async function POST(req: Request) {
       html: `
         <div class="container" style="max-width: 600px; padding: 20px; border-radius: 5px; line-height: 1.8;">
           <div class="header" style="border-bottom: 1px solid #eee;">
-            <a style="font-size: 1.4em; color: #000; text-decoration: none; font-weight: 600;">Notely</a>
+            <a style="font-size: 1.4em; color: #000; text-decoration: none; font-weight: 600;">Quick-Note</a>
           </div>
           <br />
           <strong>Dear ${name},</strong>
           <p>
-            We received a request to reset the password for your Notely account. Please click the link below to reset your password:
+            We received a request to reset the password for your Quick-Note account. Please click the link below to reset your password:
           </p>
           <a href="${resetLink}" style="background-color: #00bc69; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
             Reset Your Password
@@ -59,12 +59,12 @@ export async function POST(req: Request) {
           <br />
           If you did not request a password reset, please ignore this email.
           <br />
-          <strong>Thank you for using Notely.</strong>
+          <strong>Thank you for using Quick-Note.</strong>
           <br />
           <br />
           Best regards,
           <br />
-          <strong>Notely</strong>
+          <strong>Quick-Note</strong>
         </div>
       `,
     };

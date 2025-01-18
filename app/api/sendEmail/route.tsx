@@ -45,12 +45,12 @@ export async function POST(req: Request) {
       html: `
            <div class="container" style="margin: 0 auto; width: 100%; max-width: 600px; padding: 0 0px; padding-bottom: 10px; border-radius: 5px; line-height: 1.8;">
   <div class="header" style="border-bottom: 1px solid #eee;">
-    <a style="font-size: 1.4em; color: #000; text-decoration: none; font-weight: 600;">Notely</a>
+    <a style="font-size: 1.4em; color: #000; text-decoration: none; font-weight: 600;">Quick-Note</a>
   </div>
   <br />
   <strong>Dear ${name},</strong>
   <p>
-    We have received a login request for your Notely account. For
+    We have received a login request for your Quick-Note account. For
     security purposes, please verify your identity by providing the
     following One-Time Password (OTP).
     <br />
@@ -70,19 +70,19 @@ export async function POST(req: Request) {
     <strong>Do not forward or give this code to anyone.</strong>
     <br />
     <br />
-    <strong>Thank you for using Notely.</strong>
+    <strong>Thank you for using Quick-Note.</strong>
     <br />
     <br />
     Best regards,
     <br />
-    <strong>Notely</strong>
+    <strong>Quick-Note</strong>
   </p>
   <hr style="border: none; border-top: 0.5px solid #131111" />
   <div class="footer" style="color: #aaa; font-size: 0.8em; line-height: 1; font-weight: 300;">
     <p>This email can't receive replies.</p>
     <p>
-      For more information about Notely and your account, visit
-      <strong>Notely</strong>
+      For more information about Quick-Note and your account, visit
+      <strong>Quick-Note</strong>
     </p>
   </div>
 </div>
@@ -94,10 +94,10 @@ export async function POST(req: Request) {
     </span>
   </div>
   <div class="email-info" style="color: #666666; font-weight: 400; font-size: 13px; line-height: 18px; padding-bottom: 6px;">
-    <a href="jaydipsatani.com" style="text-decoration: none; color: #00bc69;">Notely</a>
+    <a href="jaydipsatani.com" style="text-decoration: none; color: #00bc69;">Quick-Note</a>
   </div>
   <div class="email-info" style="color: #666666; font-weight: 400; font-size: 13px; line-height: 18px; padding-bottom: 6px;">
-    &copy; ${new Date().getFullYear()} Notely. All rights reserved.
+    &copy; ${new Date().getFullYear()} Quick-Note. All rights reserved.
   </div>
 </div>
 `,

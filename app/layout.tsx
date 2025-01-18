@@ -27,7 +27,7 @@ export default function RootLayout({
   const NavbarPaths = ["/", "/archive", "/bin", "/settings"];
 
 
-  const defaultTitle = "Notely";
+  const defaultTitle = "Quick-Note";
 
   useEffect(() => {
     const titles: Record<string, string> = {
