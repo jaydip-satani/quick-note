@@ -2,9 +2,10 @@ export default function Features() {
     return (
         <section id="features" className="container py-8 md:py-12 lg:py-24 bg-background space-y-6">
             <div className="mx-auto flex max-w-[58rem] flex-col items-center text-center space-y-4">
-                <h2 className="mt-8 text-4xl lg:text-6xl font-heading font-bold text-transparent bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text drop-shadow-sm leading-tight tracking-[-0.02em] md:text-7xl md:leading-[5rem] dark:bg-gradient-to-br dark:from-gray-100 dark:to-gray-900">
+                <h2 className="mt-8 text-4xl lg:text-6xl font-heading font-bold text-transparent bg-gradient-to-br from-gray-100 to-gray-900 bg-clip-text drop-shadow-sm leading-tight tracking-[-0.02em] md:text-7xl md:leading-[5rem]">
                     Features
                 </h2>
+
                 <p className="max-w-[85%] sm:text-lg sm:leading-7">
                     Quick-Note is a powerful note-taking app that simplifies your workflow. It leverages Next.js 15, ArcJet, TailwindCSS, Mongoose, and TypeScript to offer a seamless experience.
                 </p>

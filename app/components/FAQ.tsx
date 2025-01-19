@@ -4,9 +4,10 @@ export default function FAQ() {
             className="container space-y-6 py-8 md:py-12 lg:py-24 bg-background">
             <div className="container flex flex-col justify-center px-4 py-8 mx-auto md:p-8">
                 <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
-                    <h2 className="mt-8 text-4xl lg:text-6xl text-balance bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-center font-heading text-[40px] font-bold leading-tight tracking-[-0.02em] text-transparent drop-shadow-sm duration-300 ease-linear [word-spacing:theme(spacing.1)] md:text-7xl md:leading-[5rem] dark:bg-gradient-to-br dark:from-gray-100 dark:to-gray-900">
+                    <h2 className="mt-8 text-4xl lg:text-6xl text-balance bg-gradient-to-br from-gray-100 to-gray-900 bg-clip-text text-center font-heading text-[40px] font-bold leading-tight tracking-[-0.02em] text-transparent drop-shadow-sm duration-300 ease-linear [word-spacing:theme(spacing.1)] md:text-7xl md:leading-[5rem]">
                         FAQ
                     </h2>
+
                     <p className="max-w-[85%] leading-normal sm:text-lg sm:leading-7">
                         Here are some common questions about Quick-Note. Let us know if you need more information!
                     </p>

@@ -64,12 +64,14 @@ export default async function Home() {
                                     </span>
                                 </Button>
                             </Link>
-                            <h1 className="mt-8 text-4xl  lg:text-6xl text-balance bg-gradient-to-br  from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-center font-heading text-[40px] font-bold leading-tight tracking-[-0.02em] text-transparent  drop-shadow-sm duration-300 ease-linear [word-spacing:theme(spacing.1)] md:text-7xl md:leading-[5rem] dark:bg-gradient-to-br dark:from-gray-100 dark:to-gray-900">
+                            <h1 className="mt-8 text-4xl lg:text-6xl text-balance bg-gradient-to-br from-gray-100 to-gray-900 bg-clip-text text-center font-heading text-[40px] font-bold leading-tight tracking-[-0.02em] text-transparent drop-shadow-sm duration-300 ease-linear [word-spacing:theme(spacing.1)] md:text-7xl md:leading-[5rem]">
                                 Organize Your Notes
                             </h1>
-                            <h2 className=" text-3xl  lg:text-5xl text-balance bg-gradient-to-br  from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-center font-heading text-[40px] font-bold leading-tight tracking-[-0.02em] text-transparent  drop-shadow-sm duration-300 ease-linear [word-spacing:theme(spacing.1)] md:text-6xl md:leading-[5rem] dark:bg-gradient-to-br dark:from-gray-100 dark:to-gray-900">
+
+                            <h2 className="text-3xl lg:text-5xl text-balance bg-gradient-to-br from-gray-100 to-gray-900 bg-clip-text text-center font-heading text-[40px] font-bold leading-tight tracking-[-0.02em] text-transparent drop-shadow-sm duration-300 ease-linear [word-spacing:theme(spacing.1)] md:text-6xl md:leading-[5rem]">
                                 Simplify Your Life
                             </h2>
+
                             <p className="mx-w-xl mx-auto mt-8 text-base lg:text-xl text-secondary-foreground ">
                                 Quick-Note is a powerful note-taking platform that allows you to archive notes, move them to a bin, and secure your important notes with a secure note feature. Users can also pin notes to ensure they appear at the top for quick access.
                             </p>

@@ -29,26 +29,26 @@ const Page: React.FC = () => {
         return;
     }
     return (
-        <div className="h-screen w-screen flex justify-center items-center">
+        <div className="h-screen w-screen flex justify-center items-center dark:bg-black-900">
             <div className="grid gap-8">
                 <div
                     id="back-div"
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-[26px] m-4"
+                    className="bg-gradient-to-r dark:from-blue-500 dark:to-purple-500 from-blue-500 to-purple-500 rounded-[26px] m-4"
                 >
-                    <div className="border-[20px] border-transparent rounded-[20px] dark:bg-gray-900 bg-white shadow-lg xl:p-10 2xl:p-10 lg:p-10 md:p-10 sm:p-2 m-2">
+                    <div className="border-[20px] border-transparent rounded-[20px] bg-gray-900 shadow-lg xl:p-10 2xl:p-10 lg:p-10 md:p-10 sm:p-2 m-2">
                         <h1 className="pt-8 pb-6 font-bold dark:text-gray-400 text-5xl text-center cursor-default">
                             Forgot Password
                         </h1>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label htmlFor="email" className="mb-2  dark:text-gray-400 text-lg">
+                                <label htmlFor="email" className="mb-2 dark:text-gray-400 text-lg">
                                     Email
                                 </label>
                                 <input
                                     id="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="border p-3 dark:bg-gray-700 dark:text-gray-300  dark:border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                                    className="border p-3 bg-gray-700 dark:text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 rounded-lg w-full"
                                     type="email"
                                     placeholder="Email"
                                     required
@@ -67,7 +67,6 @@ const Page: React.FC = () => {
                                 Already have an account?
                                 <Link href={'/auth/login'}
                                     className="group text-blue-400 transition-all duration-100 ease-in-out"
-
                                 >
                                     <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                                         Login
@@ -80,7 +79,6 @@ const Page: React.FC = () => {
                                 By signing in, you agree to our
                                 <a
                                     className="group text-blue-400 transition-all duration-100 ease-in-out"
-
                                 >
                                     <span className="cursor-pointer bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                                         Terms
@@ -89,7 +87,6 @@ const Page: React.FC = () => {
                                 and
                                 <Link href={'#'}
                                     className="group text-blue-400 transition-all duration-100 ease-in-out"
-
                                 >
                                     <span className="cursor-pointer bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                                         Privacy Policy
