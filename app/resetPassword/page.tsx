@@ -4,7 +4,6 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { jwtVerify } from 'jose';
 
-// Custom Hook to handle the token verification logic
 function useTokenVerification(searchParams: URLSearchParams | null) {
     const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -43,13 +42,12 @@ function useTokenVerification(searchParams: URLSearchParams | null) {
     return { isTokenValid, error };
 }
 
-// Suspense wrapper for handling loading state
 const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Suspense fallback={<p className="text-white">Loading...</p>}>{children}</Suspense>
 );
 
 const ResetPasswordPage: React.FC = () => {
-    const searchParams = useSearchParams(); // Use this hook inside client-rendered components.
+    const searchParams = useSearchParams();
     const { isTokenValid, error: tokenError } = useTokenVerification(searchParams);
     const router = useRouter();
 
@@ -78,7 +76,7 @@ const ResetPasswordPage: React.FC = () => {
             const data = await response.json();
             if (response.ok) {
                 alert('Password reset successfully!');
-                router.push('/login');
+                router.push('/auth/login');
             } else {
                 setError(data.message || 'Failed to reset password.');
             }

@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname()
-  const NavbarPaths = ["/", "/archive", "/bin", "/settings"];
+  const NavbarPaths = ["/dashboard", "/archive", "/bin", "/settings"];
 
 
   const defaultTitle = "Quick-Note";

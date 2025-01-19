@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/verification', '/resetPassword'];
+    const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/verification', '/resetPassword', '/'];
 
     if (publicPaths.includes(pathname)) {
         return NextResponse.next();

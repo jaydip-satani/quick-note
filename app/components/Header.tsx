@@ -65,7 +65,7 @@ const Navbar: React.FC = () => {
                 className={`fixed inset-y-0 z-10 flex bg-[#191a1e] w-60 opacity-80  transform transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} ease-linear`}>
                 <div className="absolute top-[10%] z-10 flex flex-col flex-1">
                     <nav className="flex flex-col flex-1 w-64 p-4 mt-4 gap-2 text-[#E9E9E9]">
-                        <Link href={"/"} className="flex items-center space-x-2">
+                        <Link href={"/dashboard"} className="flex items-center space-x-2">
                             <svg
                                 className="w-6 h-6"
                                 aria-hidden="true"
@@ -126,7 +126,7 @@ const Navbar: React.FC = () => {
                                     <path fill='currentColor' strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </div>
-                            <Link aria-current="page" className="flex items-center" href="/">
+                            <Link aria-current="page" className="flex items-center" href="/dashboard">
                                 <Image
                                     className="h-8 w-auto"
                                     src={logo}

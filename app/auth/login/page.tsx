@@ -55,7 +55,7 @@ const Page: React.FC = () => {
             const { authtoken } = data;
             if (authtoken) {
                 document.cookie = `authToken=${authtoken}; path=/; SameSite=Strict; Secure;Expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()};`
-                router.push('/');
+                router.push('/dashboard');
             }
         } catch (err: unknown) {
             setError((err as Error).message);
