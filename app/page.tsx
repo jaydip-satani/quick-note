@@ -76,9 +76,11 @@ export default async function Home() {
                         </div>
                         <div className="flex justify-center max-w-sm mx-auto mt-10 space-x-4">
                             <div>
-                                <Button size="lg" className="w-full bg-[#F9FAFB] text-[#111827]">
-                                    Get Started
-                                </Button>
+                                <Link href={'/dashboard'}>
+                                    <Button size="lg" className="w-full bg-[#F9FAFB] text-[#111827]">
+                                        Get Started
+                                    </Button>
+                                </Link>
                             </div>
                             <Link
                                 href="https://github.com/jaydip-satani"

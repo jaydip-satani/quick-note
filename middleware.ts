@@ -21,11 +21,32 @@ export async function middleware(request: NextRequest) {
     const staticAssetsRegex = /\/(_next\/|static\/|favicon\.ico|.*\.(css|js|png|jpg|jpeg|svg))/;
     const apiRoutesRegex = /^\/api\//;
 
-    if (staticAssetsRegex.test(pathname) || apiRoutesRegex.test(pathname)) {
+    if (apiRoutesRegex.test(pathname)) {
+        const response = NextResponse.next();
+
+        response.headers.set('Access-Control-Allow-Origin', '*');
+        response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+        if (request.method === 'OPTIONS') {
+            return new NextResponse(null, { status: 204 });
+        }
+
+        return response;
+    }
+
+    if (staticAssetsRegex.test(pathname)) {
         return NextResponse.next();
     }
 
-    const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/verification', '/resetPassword', '/'];
+    const publicPaths = [
+        '/auth/login',
+        '/auth/signup',
+        '/auth/forgot-password',
+        '/auth/verification',
+        '/resetPassword',
+        '/'
+    ];
 
     if (publicPaths.includes(pathname)) {
         return NextResponse.next();
