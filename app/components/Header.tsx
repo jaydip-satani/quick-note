@@ -199,14 +199,14 @@ const Navbar: React.FC = () => {
                                     <ul
                                         ref={dropdownRef}
                                         id="userMenu"
-                                        className="absolute right-0 top-12 flex w-full min-w-[12rem] flex-col overflow-hidden rounded-md border border-neutral-300 bg-neutral-50 py-1.5 dark:border-neutral-700 dark:bg-neutral-900"
+                                        className="absolute right-0 top-12 flex w-full min-w-[12rem] flex-col overflow-hidden rounded-md border  py-1.5 border-neutral-700 bg-neutral-900"
                                     >
-                                        <li className="border-b border-neutral-300 dark:border-neutral-700">
+                                        <li className="border-b border-neutral-700">
                                             <div className="flex flex-col px-4 py-2">
-                                                <span className="text-sm font-medium text-neutral-900 dark:text-white">
+                                                <span className="text-sm font-medium  text-white">
                                                     {name ? name?.charAt(0).toUpperCase() + name?.slice(1) : ''}
                                                 </span>
-                                                <p className="text-xs text-neutral-600 dark:text-neutral-300">
+                                                <p className="text-xs text-neutral-300">
                                                     {loading ? (
                                                         <span>Loading...</span>
                                                     ) : (
@@ -220,7 +220,7 @@ const Navbar: React.FC = () => {
                                         <li>
                                             <Link
                                                 href={'/settings'}
-                                                className="block px-4 py-2 text-sm bg-neutral-50 text-neutral-600 hover:bg-neutral-900/5 hover:text-neutral-900 focus-visible:bg-neutral-900/10 focus-visible:text-neutral-900 focus-visible:outline-none dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-50/5 dark:hover:text-white dark:focus-visible:bg-neutral-50/10 dark:focus-visible:text-white"
+                                                className="block px-4 py-2 text-sm focus-visible:outline-none bg-neutral-900 text-neutral-300 hover:bg-neutral-50/5 hover:text-white focus-visible:bg-neutral-50/10 focus-visible:text-white"
                                             >
                                                 Settings
                                             </Link>
@@ -228,7 +228,7 @@ const Navbar: React.FC = () => {
                                         <li>
                                             <div
                                                 onClick={handleLogOut}
-                                                className="block px-4 py-2 text-sm bg-neutral-50 text-neutral-600 hover:bg-neutral-900/5 hover:text-neutral-900 focus-visible:bg-neutral-900/10 focus-visible:text-neutral-900 focus-visible:outline-none dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-50/5 dark:hover:text-white dark:focus-visible:bg-neutral-50/10 dark:focus-visible:text-white cursor-pointer"
+                                                className="block px-4 py-2 text-sm focus-visible:outline-none bg-neutral-900 text-neutral-300 hover:bg-neutral-50/5 hover:text-white focus-visible:bg-neutral-50/10 focus-visible:text-white cursor-pointer"
                                             >
                                                 Sign Out
                                             </div>
