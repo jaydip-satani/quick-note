@@ -63,7 +63,7 @@ const NoteState: React.FC<NoteStateProps> = ({ children }) => {
         } catch (error) {
             console.error("Error occurred while fetching notes:", error);
         }
-    }, []);
+    }, [host]);
 
     const deleteNote = (id: string) => {
         setNotes(notes.filter((note) => note._id !== id));
