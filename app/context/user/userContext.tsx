@@ -9,9 +9,9 @@ interface UserContextType {
     setUserData: (name: string, email: string, profilePhoto: string) => void;
     fetchUserData: () => Promise<void>;
 }
-
+const hostURL = process.env.NEXT_PUBLIC_USER_HOST as string;
 const UserContext = createContext<UserContextType | undefined>(undefined);
-const host = "http://localhost:3000/";
+const host = hostURL;
 const api = "api/";
 const getDetails = "getDetail";
 

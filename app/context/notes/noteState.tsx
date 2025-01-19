@@ -21,10 +21,10 @@ interface NoteContextType {
 interface NoteStateProps {
     children: ReactNode;
 }
-
+const hostURL = process.env.NEXT_PUBLIC_USER_HOST as string;
 export const NoteContext = createContext<NoteContextType | undefined>(undefined);
 const NoteState: React.FC<NoteStateProps> = ({ children }) => {
-    const host = "http://localhost:3000/";
+    const host = hostURL;
     const api = "api/";
     const getURL = "getNotes/";
     const addURL = "addNotes/";
