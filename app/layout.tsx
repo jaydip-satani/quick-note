@@ -31,15 +31,16 @@ export default function RootLayout({
 
   useEffect(() => {
     const titles: Record<string, string> = {
-      "/auth/login": "Login ",
-      "/auth/signup": "Sign Up ",
-      "/auth/forgot-password": "Forgot Password ",
-      "/auth/verification": "Verification ",
-      "/secure-notes": "Secure Notes ",
-      "/archive": "Archive ",
-      "/bin": "Bin ",
-      "/resetPassword": "Reset Password ",
-      "/settings": "Settings ",
+      "/auth/login": "Login | Quick-Note ",
+      "/auth/signup": "Sign Up | Quick-Note ",
+      "/auth/forgot-password": "Forgot Password | Quick-Note ",
+      "/auth/verification": "Verification | Quick-Note ",
+      "/secure-notes": "Secure Notes | Quick-Note ",
+      "/archive": "Archive | Quick-Note ",
+      "/bin": "Bin | Quick-Note ",
+      "/resetPassword": "Reset Password | Quick-Note ",
+      "/settings": "Settings | Quick-Note ",
+      "/dashboard": "Dashboard | Quick-Note ",
     };
     const pageTitle = titles[pathname] || defaultTitle;
     document.title = pageTitle;
