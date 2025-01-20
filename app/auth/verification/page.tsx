@@ -1,18 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation' // Correct import for useRouter in Next.js 13+ with app directory
+import { useRouter } from 'next/navigation'
 import jwt from 'jsonwebtoken'
 
 const Page = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [decodedToken, setDecodedToken] = useState<unknown>(null);
-    const [isClient, setIsClient] = useState(false); // Flag to check if we're on the client side
-    const router = useRouter(); // This will only work on the client side
+    const [isClient, setIsClient] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
-        setIsClient(true); // Mark that we are on the client side
+        setIsClient(true);
 
         const encodedEmail = new URLSearchParams(window.location.search).get('token');
         if (encodedEmail) {
@@ -46,7 +46,7 @@ const Page = () => {
 
             const data = await response.json();
             if (data.success) {
-                router.push('/auth/login'); // Only works on the client side
+                router.push('/auth/login');
             }
         } catch (err) {
             setError((err as Error).message);
@@ -56,7 +56,7 @@ const Page = () => {
     };
 
     if (!isClient) {
-        return <p>Loading...</p>; // Render loading state until the component is mounted
+        return <p>Loading...</p>;
     }
 
     return (
