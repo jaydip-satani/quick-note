@@ -1,118 +1,88 @@
-import dbConnect from '@/middleware/connect';
-import User from '@/models/User';
-import { NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
-import jwt from 'jsonwebtoken';
+import dbConnect from "@/middleware/connect";
+import User from "@/models/User";
+import { Resend } from "resend";
+import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   const JWT_TOKEN = process.env.JWT_EMAIL;
   if (!JWT_TOKEN) {
-    return NextResponse.json({ message: 'JWT_EMAIL environment variable is not defined' }, { status: 500 });
+    return NextResponse.json(
+      { message: "JWT_EMAIL environment variable is not defined" },
+      { status: 500 }
+    );
   }
+
   const { name, email } = await req.json();
-  dbConnect();
+  await dbConnect();
   const otp = Math.floor(100000 + Math.random() * 900000);
+
   try {
     const validEmail = email.trim().toLowerCase();
-    try {
-      const user = await User.findOne({ email: validEmail }).maxTimeMS(5000);
-      if (!user) {
-        return NextResponse.json({ message: 'User not found' }, { status: 404 });
-      }
-    } catch (error) {
-      console.error('Query failed or timed out:', error);
-      return NextResponse.json({ message: 'User Not Registered: ' + error }, { status: 400 });
+    const user = await User.findOne({ email: validEmail }).maxTimeMS(5000);
+
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
+
     const response = await User.updateOne(
       { email: validEmail },
       { $set: { otp: otp } }
     );
 
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER as string,
-        pass: process.env.EMAIL_PASS as string,
-      },
-    });
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'OTP Verification',
-      html: `
-           <div class="container" style="margin: 0 auto; width: 100%; max-width: 600px; padding: 0 0px; padding-bottom: 10px; border-radius: 5px; line-height: 1.8;">
-  <div class="header" style="border-bottom: 1px solid #eee;">
-    <a style="font-size: 1.4em; color: #000; text-decoration: none; font-weight: 600;">Quick-Note</a>
-  </div>
-  <br />
-  <strong>Dear ${name},</strong>
-  <p>
-    We have received a login request for your Quick-Note account. For
-    security purposes, please verify your identity by providing the
-    following One-Time Password (OTP).
-    <br />
-    <b>Your One-Time Password (OTP) verification code is:</b>
-  </p>
-  <h2 class="otp" style="background: linear-gradient(to right, #00bc69 0, #00bc88 50%, #00bca8 100%); margin: 0 auto; width: max-content; padding: 0 10px; color: #fff; border-radius: 4px;">${otp}</h2>
-  <p style="font-size: 0.9em">
-    <strong>One-Time Password (OTP) is valid for 3 minutes.</strong>
-    <p style="color: red; font-weight: bold;">
-  Note: Your secure notes password is the same as your login password. You can change it after signing in by navigating to <strong>Profile Icon > Account Settings > Change Secure PIN</strong>.
-</p>
-    <br />
-    <br />
-    If you did not initiate this login request, please disregard this
-    message. Please ensure the confidentiality of your OTP and do not share
-    it with anyone.<br />
-    <strong>Do not forward or give this code to anyone.</strong>
-    <br />
-    <br />
-    <strong>Thank you for using Quick-Note.</strong>
-    <br />
-    <br />
-    Best regards,
-    <br />
-    <strong>Quick-Note</strong>
-  </p>
-  <hr style="border: none; border-top: 0.5px solid #131111" />
-  <div class="footer" style="color: #aaa; font-size: 0.8em; line-height: 1; font-weight: 300;">
-    <p>This email can't receive replies.</p>
-    <p>
-      For more information about Quick-Note and your account, visit
-      <strong>Quick-Note</strong>
-    </p>
-  </div>
-</div>
-<div style="text-align: center">
-  <div class="email-info" style="color: #666666; font-weight: 400; font-size: 13px; line-height: 18px; padding-bottom: 6px;">
-    <span>
-      This email was sent to
-      <a href="mailto:${email}" style="text-decoration: none; color: #00bc69;">${email}</a>
-    </span>
-  </div>
-  <div class="email-info" style="color: #666666; font-weight: 400; font-size: 13px; line-height: 18px; padding-bottom: 6px;">
-    <a href="jaydipsatani.com" style="text-decoration: none; color: #00bc69;">Quick-Note</a>
-  </div>
-  <div class="email-info" style="color: #666666; font-weight: 400; font-size: 13px; line-height: 18px; padding-bottom: 6px;">
-    &copy; ${new Date().getFullYear()} Quick-Note. All rights reserved.
-  </div>
-</div>
-`,
-    };
-
-    if (response) {
-      const authtoken = jwt.sign(email, JWT_TOKEN);
-
-      await transporter.sendMail(mailOptions);
-      return new Response(JSON.stringify({ success: true, authtoken: authtoken }), { status: 200 });
-    } else {
-      return new Response(JSON.stringify({ success: false }), { status: 400 });
+    if (response.modifiedCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "Failed to update OTP" },
+        { status: 400 }
+      );
     }
+
+    const emailHtml = `
+      <div style="margin: 0 auto; max-width: 600px; font-family: sans-serif;">
+        <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+          <h2 style="margin: 0; color: #000;">Quick-Note</h2>
+        </div>
+        <p><strong>Dear ${name},</strong></p>
+        <p>We received a login request for your Quick-Note account. Please verify your identity by using the OTP below:</p>
+        <h2 style="background: linear-gradient(to right, #00bc69, #00bc88, #00bca8); display: inline-block; padding: 8px 16px; color: #fff; border-radius: 4px;">${otp}</h2>
+        <p><strong>Note:</strong> OTP is valid for 3 minutes.</p>
+        <p style="color: red;"><strong>Your secure notes password is the same as your login password.</strong></p>
+        <p>If you didn't initiate this login, please ignore this message.</p>
+        <p>Thank you,<br><strong>Quick-Note Team</strong></p>
+        <hr />
+        <p style="color: #aaa; font-size: 0.8em;">This is an automated email. Please do not reply.</p>
+        <p style="color: #aaa; font-size: 0.8em;">&copy; ${new Date().getFullYear()} Quick-Note. All rights reserved.</p>
+      </div>
+    `;
+
+    const send = await resend.emails.send({
+      from: "Quick-Note <quicknote@jaydipsatani.com>",
+      to: [validEmail],
+      subject: "Your OTP Verification Code",
+      html: emailHtml,
+    });
+
+    if (send.error) {
+      console.error("Resend email failed:", send.error);
+      return new Response(
+        JSON.stringify({ success: false, error: send.error }),
+        {
+          status: 500,
+        }
+      );
+    }
+
+    const authtoken = jwt.sign(email, JWT_TOKEN);
+    return new Response(JSON.stringify({ success: true, authtoken }), {
+      status: 200,
+    });
   } catch (error) {
-    console.error('Error sending email:', error);
-    return new Response(JSON.stringify({ success: false, error: 'Failed to send email' }), { status: 500 });
+    console.error("Error:", error);
+    return new Response(
+      JSON.stringify({ success: false, error: "Internal server error" }),
+      { status: 500 }
+    );
   }
 }
