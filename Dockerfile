@@ -1,76 +1,35 @@
-# Dockerfile for a Next.js application using Yarn
+FROM ubuntu:22.04
 
-# ---- Base Stage ----
-# Use a specific Node.js version for reproducibility.
-# Alpine Linux is used for its small size.
-FROM node:20-alpine AS base
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y curl gnupg git build-essential python3 && \
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean
+
+# Enable Corepack and activate Yarn v3.2.3
+RUN corepack enable && corepack prepare yarn@3.2.3 --activate
+
+# Set working directory
 WORKDIR /app
 
-# Enable Yarn by enabling corepack
-RUN corepack enable
-
-
-# ---- Dependencies Stage ----
-# This stage is dedicated to installing dependencies.
-# It will be cached by Docker unless dependency files change.
-FROM base AS deps
-WORKDIR /app
-
-# Copy only the files needed to install dependencies
+# Copy relevant files needed for install
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
+COPY .yarn .yarn
 
-# Install dependencies using Yarn.
-# The --immutable flag ensures that yarn.lock is not modified, which is good practice for CI/CD.
+# Install dependencies
 RUN yarn install --immutable
 
-
-# ---- Builder Stage ----
-# This stage builds the Next.js application.
-FROM base AS builder
-WORKDIR /app
-
-# Copy dependencies from the previous stage
-COPY --from=deps /app/node_modules ./node_modules
-# Copy the rest of your application's source code
+# Copy rest of the app
 COPY . .
 
-# Build the Next.js application for production.
-# This will create the .next folder with the build output.
+# Build Next.js app
 RUN yarn build
 
-
-# ---- Runner Stage ----
-# This is the final, lightweight production image.
-FROM base AS runner
-WORKDIR /app
-
-# Set the environment to production
-ENV NODE_ENV production
-
-# Create a non-root user and group for better security.
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# For optimal performance and small image size, it's highly recommended to
-# enable Next.js's standalone output mode.
-# Add the following to your next.config.js file:
-#
-# module.exports = {
-#   output: 'standalone',
-# };
-#
-# This creates a 'standalone' folder inside '.next' with only the necessary files.
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Switch to the non-root user
-USER nextjs
-
-# Expose the port the app will run on
+# Expose Next.js port
 EXPOSE 3000
 
-# The command to start the Next.js server.
-# The 'server.js' file is automatically created by the 'standalone' output mode.
-CMD ["node", "server.js"]
+# Start app
+CMD ["yarn", "start"]
